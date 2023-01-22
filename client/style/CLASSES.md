@@ -33,6 +33,7 @@
 ## Text
 - `title`
 - `bigger` 
+- `smaller`
 
 ## buttons
 - `button`

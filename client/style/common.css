@@ -15,7 +15,7 @@
 	--main-color-50: rgb(52, 151, 166, 0.5);
 	--dark: rgb(35, 39, 47);
 	--light: rgb(240, 240, 240);
-	--light-50: rgb(240, 240, 240, 0.5);
+	--light-50: rgb(240, 240, 240, 0.7);
 	--gray: rgb(168, 168, 168);
 	--secondary-color: rgb(193, 170, 2);
 
@@ -34,12 +34,12 @@
 }
 
 ::-moz-selection {
-	color: var(--main-color);
+	color: var(--light);
 	background: var(--secondary-color);
 }
   
 ::selection {
-	color: var(--main-color);
+	color: var(--light);
 	background: var(--secondary-color);
 }
 
@@ -195,9 +195,23 @@ p {
 	font-size: xx-large;
 }
 
+.smaller {
+	font-size: medium;
+}
+
 .title::before {
 	content: "> ";
 	color: var(--secondary-color);
+}
+
+footer {
+	background-color: var(--dark);
+	color: var(--light);
+	padding: 20px;
+}
+
+.section {
+	padding: 30px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -206,7 +220,7 @@ p {
 		--dark: rgb(255, 255, 255);
 		--main-color: rgb(52, 151, 166);
 		--main-color-50: rgb(52, 151, 166, 0.5);
-		--light-50: rgb(35, 39, 47, 0.5);
+		--light-50: rgb(35, 39, 47, 0.7);
 		--gray: rgb(71, 73, 79);
 		--secondary-color: rgb(210, 185, 0);
 	}

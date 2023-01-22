@@ -1,12 +1,14 @@
 window.onload = () => {
-	let msg = "esplora un mondo";
-	let i = 0;
-	let element = document.getElementById("welcome-animation");
-	let animation = setInterval(() => {
-		element.innerHTML += msg[i];
-		i++;
-		if (i == msg.length) clearInterval(animation);
-	}, Math.random() * 100 + 50);
+	setTimeout(() => {
+		let msg = "esplora un mondo";
+		let i = 0;
+		let element = document.getElementById("welcome-animation");
+		let animation = setInterval(() => {
+			element.innerHTML += msg[i];
+			i++;
+			if (i == msg.length) clearInterval(animation);
+		}, Math.random() * 100 + 50);
+	}, 800);
 }
 
 let tutorialShown = false;
@@ -14,7 +16,7 @@ window.addEventListener("scroll", showTutorial);
 
 function showTutorial() {
 	let tutorialSection = document.getElementById("tutorial-section");
-	if(getCoords(tutorialSection).top < window.scrollY + 200 && !tutorialShown) {
+	if(getCoords(tutorialSection).top < window.scrollY + 350 && !tutorialShown) {
 		let tutorialExampleQuestion = document.getElementById("tutorial-example-question");
 		let tutorialExampleAnswer = document.getElementById("tutorial-example-answer");
 		let msg1 = "> Come faccio a centrare un div in CSS?";
