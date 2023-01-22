@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --build",
-    "start": "start node pf.js && tsc --build && nodemon",
+    "start": "start node pf.js && tsc --build && start nodemon && timeout 3 && start http://localhost",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
