@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/resources/css">
     <link rel="stylesheet" href="/resources/css/index">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <title>Document</title>
     <script src="/resources/js/index"></script>
 </head>
@@ -26,15 +27,71 @@
             <div class="clickable button">Corsi completi</div>
             <div class="clickable button">Tutorial</div>
             <div class="clickable button">Notizie e altro</div>
-            <div class="avatar"></div>
+            <div class="circle bkg-gray-color"></div>
         </nav>
     </header>
+    <div id="header-spacer"></div>
     <main>
         <div class="column-container" id="welcome-section">
-            <div id="welcome-animation-container">
-                <h1 id="welcome-animation">> </h1>
+            <div id="welcome-animation-container" class="column-container">
+                <h2 id="welcome-animation">> </h2>
+                <div id="keep-scrolling" class="column-container">
+                    <h3>Contiuna a scrollare per imparare come diventare programmatore</h3>
+                    <div id="icon-keep-scrolling" class="circle main-color bkg-light-color">
+                        <span class="material-symbols-outlined">
+                            arrow_downward
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <!-- end welcome section -->
+        <div class="inline-container" id="explore-section">
+            <div class="card bkg-dark-color light-color max-height">
+                <h2 class="title">Tutorial</h2>
+                <div>
+                    <p>
+                        Scopri tutti i tutorial disponibili e impara ad usare le librerie più famose e usate al mondo per ogni linguaggio
+                    </p>
+                    <div class="clickable button">Scopri di più</div>
+                </div>
+            </div>
+            <div class="card bkg-dark-color light-color max-height">
+                <h2 class="title">Corsi</h2>
+                <div>
+                    <p>
+                        Con i corsi, a differenza dei tutorial, potrai partire da zero e imparare un nuovo linguaggio con una varietà di lezioni e contenuti multimediali
+                    </p>
+                    <div class="clickable button">Scopri di più</div>
+                </div>
+            </div>
+            <div class="card bkg-dark-color light-color max-height">
+                <h2 class="title">Notizie</h2>
+                <div>
+                    <p>
+                        Non solo tutorial e corsi, in questa piattaforma potrai anche rimanere aggiornato sulle ultime tecnologie uscite
+                    </p>
+                    <div class="clickable button">Scopri di più</div>
+                </div>
             </div>
         </div>
+        <!-- end explore (card) section -->
+        <div id="tutorial-section" class="bkg-light-color">
+            <h2 class="title bigger">I tutorial</h2>
+            <div class="inline-container">
+                <p>
+                    I tutorial permettono di condividere conoscienze tra gli utenti della piattaforma
+                    e danno risposte a domande dettagliate. L'obiettivo dei tutorial è quello di condividere 
+                    esperienze su come risolvere determinati problemi
+                </p>
+                <p class="max-width" id="tutorial-example">
+                    <span id="tutorial-example-question" class="main-color"></span>
+                    <br>
+                    <span id="tutorial-example-answer" class="secondary-color"></span>
+                </p>
+            </div>
+        </div>
+        <div style="height: 800px"></div>
     </main>
     <footer>
 

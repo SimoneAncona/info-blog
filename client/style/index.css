@@ -2,13 +2,44 @@
 	background: linear-gradient(180deg, var(--light) 0%, var(--light) 50%, var(--main-color) 100%);
 }
 
+@keyframes blink {
+	0% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
 #welcome-animation-container {
 	height: 90vh;
 	display: flex;
 	align-items: center;
+	justify-content: space-around;
 }
 
 #welcome-animation {
 	font-family: 'Courier New', Courier, monospace;
 	font-size: 8vh;
+}
+
+#welcome-animation::after {
+	content: "|";
+	font-family: sans-serif;
+	animation: blink 1s;
+	animation-iteration-count: infinite;
+}
+
+#explore-section {
+	background-color: var(--main-color);
+	padding: 20px;
+	column-gap: 20px;
+}
+
+#tutorial-example {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 5vh;
 }

@@ -15,7 +15,9 @@
 	--main-color-50: rgb(52, 151, 166, 0.5);
 	--dark: rgb(35, 39, 47);
 	--light: rgb(240, 240, 240);
+	--light-50: rgb(240, 240, 240, 0.5);
 	--gray: rgb(168, 168, 168);
+	--secondary-color: rgb(193, 170, 2);
 
 	font-family: Gotham;
 	background-color: var(--light);
@@ -31,15 +33,32 @@
 	outline: none;
 }
 
+::-moz-selection {
+	color: var(--main-color);
+	background: var(--secondary-color);
+}
+  
+::selection {
+	color: var(--main-color);
+	background: var(--secondary-color);
+}
 
 header {
-	background-color: var(--light);
+	background-color: var(--light-50);
 	padding: 10px;
 	height: var(--header-height);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
+	position: fixed;
+	width: 100%;
+	z-index: 2;
+	backdrop-filter: blur(5px);
+}
+
+#header-spacer {
+	height: var(--header-height);
 }
 
 nav {
@@ -68,8 +87,44 @@ nav {
 	color: var(--main-color-50);
 }
 
+.gray-color {
+	color: var(--gray);
+}
+
+.secondary-color {
+	color: var(--secondary-color);
+}
+
+.bkg-light-color {
+	background-color: var(--light);
+}
+
+.bkg-dark-color {
+	background-color: var(--dark);
+}
+
+.bkg-main-color {
+	background-color: var(--main-color);
+}
+
+.bkg-main-color-50 {
+	background-color: var(--main-color-50);
+}
+
+.bkg-gray-color {
+	background-color: var(--gray);
+}
+
+.bkg-secondary-color {
+	background-color: var(--secondary-color);
+}
+
 .clickable:hover {
 	cursor: pointer;
+}
+
+p {
+	font-size: large;
 }
 
 .button {
@@ -92,18 +147,57 @@ nav {
 	align-items: center;
 }
 
-.avatar {
+.circle {
 	border-radius: 100%;
 	aspect-ratio: 1/1;
-	background-color: var(--gray);
 	height: 40px;
 	margin: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .column-container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	flex-wrap: wrap;
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border-radius: 8px;
+	padding: 20px;
+}
+
+p {
+	margin: 10px;
+	margin-inline: 15px;
+}
+
+.max-width {
+	width: 100%;
+}
+
+.max-height {
+	height: 100%;
+	position: relative;
+}
+
+.title {
+	margin: 10px;
+	margin-top: 20px;
+}
+
+.bigger {
+	font-size: xx-large;
+}
+
+.title::before {
+	content: "> ";
+	color: var(--secondary-color);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -112,6 +206,18 @@ nav {
 		--dark: rgb(255, 255, 255);
 		--main-color: rgb(52, 151, 166);
 		--main-color-50: rgb(52, 151, 166, 0.5);
+		--light-50: rgb(35, 39, 47, 0.5);
 		--gray: rgb(71, 73, 79);
+		--secondary-color: rgb(210, 185, 0);
+	}
+
+	::-moz-selection {
+		color: var(--light);
+		background: var(--secondary-color);
+	}
+	  
+	::selection {
+		color: var(--light);
+		background: var(--secondary-color);
 	}
 }
