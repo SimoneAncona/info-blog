@@ -1,0 +1,117 @@
+@font-face {
+	font-family: "Gotham";
+	src: url("/resources/font/");
+}
+
+:root {
+	color-scheme: light dark;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+
+	--main-color: rgb(52, 151, 166);
+	--main-color-50: rgb(52, 151, 166, 0.5);
+	--dark: rgb(35, 39, 47);
+	--light: rgb(240, 240, 240);
+	--gray: rgb(168, 168, 168);
+
+	font-family: Gotham;
+	background-color: var(--light);
+	color: var(--dark);
+
+	--header-height: 15vh;
+}
+
+*, *::after, *::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	outline: none;
+}
+
+
+header {
+	background-color: var(--light);
+	padding: 10px;
+	height: var(--header-height);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+nav {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+#header-logo {
+	font-weight: bolder;
+}
+
+.light-color {
+	color: var(--light);
+}
+
+.dark-color {
+	color: var(--dark);
+}
+
+.main-color {
+	color: var(--main-color);
+}
+
+.main-color-50 {
+	color: var(--main-color-50);
+}
+
+.clickable:hover {
+	cursor: pointer;
+}
+
+.button {
+	background-color: var(--main-color);
+	padding: 6px;
+	border-radius: 4px;
+	margin: 5px;
+	padding-inline: 8px;
+	color: var(--light);
+	transition: all 0.3s ease;
+}
+
+.button:hover {
+	filter: brightness(0.9);
+}
+
+.inline-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.avatar {
+	border-radius: 100%;
+	aspect-ratio: 1/1;
+	background-color: var(--gray);
+	height: 40px;
+	margin: 10px;
+}
+
+.column-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--light: rgb(35, 39, 47);
+		--dark: rgb(255, 255, 255);
+		--main-color: rgb(52, 151, 166);
+		--main-color-50: rgb(52, 151, 166, 0.5);
+		--gray: rgb(71, 73, 79);
+	}
+}
