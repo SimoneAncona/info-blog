@@ -14,17 +14,22 @@
 - `bkg-main-color-50`: set backgournd color to main 50 alpha
 - `bkg-gray-color` set backgournd color to gray
 - `bkg-secondary-color` set backgournd color to secondary
+- `bottom-shadow` set gray bottom shadow
 
 ## Containers
-- `inline-container`: a div display flex row direction
-- `column-container`: a div display flex column direction
+- `inline-container`: a div display flex row direction centered
+- `column-container`: a div display flex column direction centered
+- `inline-container-start`: a div display flex row from start
+- `column-container-start`: a div display flex column from start
 - `card`: like column container with border radius
 
 ## Page Elements
-- `circle`: the icon of the profile
+- `circle`: a circle
+- `main-logo`: the logo of the page
 
 ## Internal position
 - `center`: align items center
+- `start`: align items from start
 
 ## External position
 - `max-width`: max width

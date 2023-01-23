@@ -14,6 +14,18 @@
 	}
 }
 
+@keyframes up-down {
+	0% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(5px);
+	}
+	100% {
+		transform: translateY(0);
+	}
+}
+
 #welcome-animation-container {
 	height: 90vh;
 	display: flex;
@@ -43,4 +55,20 @@
 	font-family: 'Courier New', Courier, monospace;
 	font-size: 5vh;
 	height: 200px;
+}
+
+#icon-keep-scrolling {
+	animation: up-down 1.2s;
+	animation-iteration-count: infinite;
+}
+
+#footer-info {
+	column-gap: 25px;
+	margin-bottom: 30px;
+}
+
+@media (max-width: 800px) {
+	#explore-section {
+		row-gap: 20px;
+	}
 }
