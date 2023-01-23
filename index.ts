@@ -26,8 +26,8 @@ app.get("/resources/css/", (req, res) => {
 });
 
 // get home page css
-app.get("/resources/css/index", (req, res) => {
-    res.sendFile(path.join(__dirname, "./client/style/index.css"));
+app.get("/resources/css/:file", (req, res) => {
+    res.sendFile(path.join(__dirname, `./client/style/${req.params.file}.css`));
 });
 
 // get font
@@ -35,12 +35,17 @@ app.get("/resources/font/", (req, res) => {
     res.sendFile(path.join(__dirname, "./client/assets/Gotham-Font/GothamMedium.ttf"));
 });
 
-app.get("/resources/js/index", (req, res) => {
-    res.sendFile(path.join(__dirname, "./client/src/index.js"));
+app.get("/resources/js/:file", (req, res) => {
+    res.sendFile(path.join(__dirname, `./client/src/${req.params.file}.js`));
 });
 
 app.get("/resources/js", (req, res) => {
     res.sendFile(path.join(__dirname, "./client/src/common.js"));
+});
+
+// send image
+app.get("/resources/images/:image", (req, res) => {
+    res.sendFile(path.join(__dirname, `./client/assets/images/${req.params.image}`));
 });
 
 app.listen(port, () => {

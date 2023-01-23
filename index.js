@@ -15,14 +15,20 @@ app.get("/", function (req, res) {
 app.get("/resources/css/", function (req, res) {
     res.sendFile(path.join(__dirname, "./client/style/common.css"));
 });
-app.get("/resources/css/index", function (req, res) {
-    res.sendFile(path.join(__dirname, "./client/style/index.css"));
+app.get("/resources/css/:file", function (req, res) {
+    res.sendFile(path.join(__dirname, "./client/style/".concat(req.params.file, ".css")));
 });
 app.get("/resources/font/", function (req, res) {
     res.sendFile(path.join(__dirname, "./client/assets/Gotham-Font/GothamMedium.ttf"));
 });
-app.get("/resources/js/index", function (req, res) {
-    res.sendFile(path.join(__dirname, "./client/src/index.js"));
+app.get("/resources/js/:file", function (req, res) {
+    res.sendFile(path.join(__dirname, "./client/src/".concat(req.params.file, ".js")));
+});
+app.get("/resources/js", function (req, res) {
+    res.sendFile(path.join(__dirname, "./client/src/common.js"));
+});
+app.get("/resources/images/:image", function (req, res) {
+    res.sendFile(path.join(__dirname, "./client/assets/images/".concat(req.params.image)));
 });
 app.listen(port, function () {
     console.log("listening on port %d", port);

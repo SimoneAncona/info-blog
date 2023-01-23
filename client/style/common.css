@@ -214,6 +214,10 @@ footer {
 	padding: 30px;
 }
 
+.course-image {
+	width: 100px;
+}
+
 @media (prefers-color-scheme: dark) {
 	:root {
 		--light: rgb(35, 39, 47);

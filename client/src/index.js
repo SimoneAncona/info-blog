@@ -9,10 +9,20 @@ window.onload = () => {
 			if (i == msg.length) clearInterval(animation);
 		}, Math.random() * 100 + 50);
 	}, 800);
+
+	let courseImages = Array.from(document.getElementsByClassName("course-image"));
+	courseImages.forEach(e => {
+		e.style.transform = `rotate(${Math.random() * 40 - 20}deg)`;
+		e.style.margin = `${Math.random() * 20 + 15}px`;
+		e.style.width = `${Math.random() * 20 + 50}`;
+		e.style.opacity = 0;
+	})
 }
 
 let tutorialShown = false;
+let coursesShown = false;
 window.addEventListener("scroll", showTutorial);
+window.addEventListener("scroll", showCourses);
 
 function showTutorial() {
 	let tutorialSection = document.getElementById("tutorial-section");
@@ -36,6 +46,32 @@ function showTutorial() {
 				}, Math.random() * 50 + 25);
 			}
 		}, Math.random() * 50 + 25);
+
+		
+	}
+}
+
+function showCourses() {
+	let courseSection = document.getElementById("course-section");
+	if(getCoords(courseSection).top < window.scrollY + 350 && !coursesShown) {
+		let courseImages = Array.from(document.getElementsByClassName("course-image"));
+		coursesShown = true;
+		let i = 0;
+		let opacity = 0;
+		let animation;
+		let time = 50;
+		let animationCallback = () => {
+			courseImages[i].style.opacity = opacity;
+			opacity += 0.1;
+			if (opacity >= 1) {
+				clearInterval(animation);
+				opacity = 0;
+				i++;
+				if (i < courseImages.length)
+					animation = setInterval(animationCallback, time);
+			}
+		}
+		animation = setInterval(animationCallback, time);
 
 		
 	}
