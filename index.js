@@ -12,6 +12,9 @@ function sendQuery(query) {
 app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "./client/pages/index.html"));
 });
+app.get("/:page/", function (req, res) {
+    res.sendFile(path.join(__dirname, "./client/pages/".concat(req.params.page, ".html")));
+});
 app.get("/resources/css/", function (req, res) {
     res.sendFile(path.join(__dirname, "./client/style/common.css"));
 });

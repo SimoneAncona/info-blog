@@ -67,8 +67,32 @@
 	margin-bottom: 30px;
 }
 
+#cookie-banner {
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 80%;
+	margin: 10px;
+	bottom: 0;
+	transition: all 0.4s ease;
+	border-radius: 5px;
+	box-shadow: 0 0 4px 3px var(--gray-50);
+	z-index: 3;
+	color: var(--light);
+	padding: 10px;
+	opacity: 0;
+}
+
 @media (max-width: 800px) {
 	#explore-section {
 		row-gap: 20px;
+	}
+
+	#cookie-banner {
+		top: 50%;
+		left: 50%;
+		transform: translateY(-50%) translateX(-50%);
+		height: max-content;
+		padding: 20px;
 	}
 }

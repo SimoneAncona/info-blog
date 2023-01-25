@@ -19,6 +19,10 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "./client/pages/index.html"));
 });
 
+app.get("/:page/", (req, res) => {
+    res.sendFile(path.join(__dirname, `./client/pages/${req.params.page}.html`));
+});
+
 // ---------------------- CLIENT RESOURCES ----------------------
 // get common css
 app.get("/resources/css/", (req, res) => {

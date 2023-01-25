@@ -1,0 +1,3 @@
+#background {
+    background: linear-gradient(180deg, var(--light) 0%, var(--light) 60%, var(--main-color-50) 100%);
+}

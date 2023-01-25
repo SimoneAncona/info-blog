@@ -22,6 +22,7 @@
 - `inline-container-start`: a div display flex row from start
 - `column-container-start`: a div display flex column from start
 - `card`: like column container with border radius
+- `column-containrt-center`: a div display flex column align all center
 
 ## Page Elements
 - `circle`: a circle
@@ -34,11 +35,14 @@
 ## External position
 - `max-width`: max width
 - `max-height`: max height
+- `h100`: set height to 100vh
+- `h50`: set height to 50vh
 
 ## Text
 - `title`
 - `bigger` 
 - `smaller`
 
-## buttons
-- `button`
+## Input
+- `button` button input
+- `input` input type text

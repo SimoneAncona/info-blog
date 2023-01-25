@@ -1,4 +1,4 @@
-window.onload = () => {
+window.addEventListener("load", () => {
 	setTimeout(() => {
 		let msg = "esplora un mondo";
 		let i = 0;
@@ -16,8 +16,20 @@ window.onload = () => {
 		e.style.margin = `${Math.random() * 20 + 15}px`;
 		e.style.width = `${Math.random() * 20 + 50}`;
 		e.style.opacity = 0;
-	})
-}
+	});
+});
+
+let technicalCookie = "technical cookies";
+
+// cookie banner
+window.addEventListener("load", () => {
+	let cookieBanner = document.getElementById("cookie-banner");
+	if(!checkCookie(technicalCookie)) {
+		setTimeout(() => {
+			cookieBanner.style.opacity = 1;
+		}, 1000);
+	}
+});
 
 let tutorialShown = false;
 let coursesShown = false;
@@ -93,4 +105,39 @@ function getCoords(elem) { // crossbrowser version
     var left = box.left + scrollLeft - clientLeft;
 
     return { top: Math.round(top), left: Math.round(left) };
+}
+
+function consentCookie() {
+	let cookieBanner = document.getElementById("cookie-banner");
+	cookieBanner.style.opacity = 0;
+	setTimeout(() => {
+		cookieBanner.remove();
+	}, 1000);
+	setCookie(technicalCookie, true, 1000);
+}
+
+function setCookie(name, value, expiredays) {
+	const date = new Date();
+	date.setTime(date.getTime() + (expiredays * 24 * 60 * 60 * 1000));
+	let expires = "expires=" + date.toUTCString();
+	document.cookie = name + "=" + value + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+	let name = cname + "=";
+	let ca = document.cookie.split(';');
+	for(let i = 0; i < ca.length; i++) {
+	  	let c = ca[i];
+	  	while (c.charAt(0) == ' ') {
+			c = c.substring(1);
+	  	}
+	  	if (c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+	  	}
+	}
+	return null;
+}
+
+function checkCookie(name) {
+	return getCookie(name) != null;
 }
