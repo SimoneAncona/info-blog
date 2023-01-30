@@ -3,6 +3,10 @@ window.addEventListener('load', () => {
     mainLogo.addEventListener("click", () => {
         window.location.href = "/";
     });
+    let materialIcons = document.getElementsByClassName("material-symbols-outlined");
+    Array.from(materialIcons).forEach(icon => {
+        icon.setAttribute("translate", "no");
+    })
 });
 
 

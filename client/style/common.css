@@ -27,6 +27,7 @@
 	color: var(--dark);
 
 	--header-height: 15vh;
+	scroll-behavior: smooth;
 }
 
 *, *::after, *::before {
@@ -321,6 +322,11 @@ a:hover::before {
 	background-color: var(--secondary-color);
 	position: fixed;
 	z-index: 4;
+}
+
+#footer-info {
+	column-gap: 25px;
+	margin-bottom: 30px;
 }
 
 @media (prefers-color-scheme: dark) {

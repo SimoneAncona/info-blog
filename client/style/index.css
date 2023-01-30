@@ -62,11 +62,6 @@
 	animation-iteration-count: infinite;
 }
 
-#footer-info {
-	column-gap: 25px;
-	margin-bottom: 30px;
-}
-
 #cookie-banner {
 	position: fixed;
 	left: 50%;
