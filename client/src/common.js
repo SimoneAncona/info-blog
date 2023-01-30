@@ -14,3 +14,7 @@ window.addEventListener("scroll", () => {
         header.classList.remove("bottom-shadow");
     }
 });
+
+window.addEventListener('scroll', () => {
+    document.body.style.setProperty('--scroll', ((window.pageYOffset / (document.body.offsetHeight - window.innerHeight)) * 100) + "%");
+}, false);

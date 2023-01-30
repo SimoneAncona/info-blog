@@ -37,6 +37,22 @@
 	border: 0;
 }
 
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--bkg-color);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--gray);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--secondary-color);
+}
+
 ::-moz-selection {
 	color: var(--light);
 	background: var(--secondary-color);
@@ -141,6 +157,8 @@ p {
 	padding-inline: 8px;
 	color: var(--light);
 	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
 }
 
 .button:hover {
@@ -234,7 +252,7 @@ a {
 	position: relative;
 }
 
-A::before {
+a::before {
 	content: "";
 	position: absolute;
 	height: 10%;
@@ -295,6 +313,14 @@ a:hover::before {
 
 .input:focus {
 	outline: 3px solid var(--main-color-50);
+}
+
+.scroll-container {
+	width: var(--scroll);
+	height: 3px;
+	background-color: var(--secondary-color);
+	position: fixed;
+	z-index: 4;
 }
 
 @media (prefers-color-scheme: dark) {

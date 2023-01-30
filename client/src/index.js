@@ -28,6 +28,8 @@ window.addEventListener("load", () => {
 		setTimeout(() => {
 			cookieBanner.style.opacity = 1;
 		}, 1000);
+	} else {
+		cookieBanner.remove();
 	}
 });
 
@@ -140,4 +142,11 @@ function getCookie(cname) {
 
 function checkCookie(name) {
 	return getCookie(name) != null;
+}
+
+function scrollDown() {
+	let exploreTop = getCoords(document.getElementById("explore-section")).top;
+	let headerHeight = document.getElementsByTagName("header")[0].offsetHeight;
+	window.scrollTo(0, exploreTop - headerHeight);
+	window.sco
 }
