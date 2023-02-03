@@ -9,6 +9,6 @@
 		"watch": true,
 		"types": ["node"]
 	},
-	"include": ["*"],
+	"include": ["*", "server/**/*"],
 	"exclude": ["node_modules", "**/*.spec.ts"]
 }
