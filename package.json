@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --build",
-    "start": "start node pf.js && tsc --build && start node index.js && timeout 3 && start http://localhost",
+    "start": "tsc --build && echo \"Building completed\" && cls && start node index.js && timeout 1 && start http://localhost",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,8 +27,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "google-auth-library": "^8.7.0",
     "http-port-forward": "^2.0.3",
     "ip": "^1.1.8",
+    "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
     "nodemon": "^2.0.20",
     "path": "^0.12.7",

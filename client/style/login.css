@@ -40,3 +40,8 @@
     right: 0;
     background-color: var(--gray);
 }
+
+header {
+    backdrop-filter: none;
+    background-color: transparent;
+}

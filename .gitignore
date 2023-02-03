@@ -106,3 +106,6 @@ dist
 # JavaSript modules
 index.js
 server/*.js
+
+# Env
+server/.env
