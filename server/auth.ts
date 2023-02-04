@@ -3,20 +3,17 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 // -- Auth verify for Google --
-function googleVerify(token: string) {
+async function googleVerify(token: string) {
 	const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 	async function verify() {
-		console.log("sadfasdf");
 		const ticket = await googleClient.verifyIdToken({
 			idToken: token,
 			audience: process.env.GOOGLE_CLIENT_ID
 		});
 		const payload = ticket.getPayload();
-		if (payload === undefined) return;
-		const userid = payload['sub'];
-		console.log(userid);
+		return payload;
 	}
-	verify().catch(console.error);
+	return verify();
 }
 
 export { googleVerify };

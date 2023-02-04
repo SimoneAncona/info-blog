@@ -16,3 +16,4 @@
 	"credential": "token"
 }
 ```
+- `/auth/client-id/google` get the google client id

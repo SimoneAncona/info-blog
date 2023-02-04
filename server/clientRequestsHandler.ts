@@ -1,11 +1,17 @@
-import { DbHandler } from "./dbHandler";
+import { sendQuery } from "./dbHandler";
 import * as express from "express";
 import * as cors from "cors";
 import * as dotenv from "dotenv";
 import * as path from "path";
 import * as auth from "./auth";
+import * as bodyParser from "body-parser";
+import { TokenPayload } from "google-auth-library";
+import { error } from "./commonErrorHandler";
+import { ErrorType } from "./commonErrorHandler";
 
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 export class ClientRequestsHandler {
     port: number | string;
@@ -67,9 +73,27 @@ export class ClientRequestsHandler {
 
     // ---------------------- AUTHENTICATION ----------------------
     private authRequest() {
-        app.post("auth/login/google", (req, res) => {
-            auth.googleVerify(req.body.credential);
+        app.post("/auth/login/google", async (req, res) => {
+            console.log(req.body);
+            const payload = await auth.googleVerify(req.body.credential);
+            if (payload === undefined) {
+                res.send(this.handleGoogleAuthError());
+                return;
+            } 
+            res.send(this.handleGoogleAuth(payload));
+        });
+
+        app.post("/auth/client-id/google", (req, res) => {
+            res.send(process.env.GOOGLE_CLIENT_ID);
         })
+    }
+
+    private handleGoogleAuth(payload: TokenPayload) {
+
+    }
+
+    private handleGoogleAuthError() {
+        return error(ErrorType.AUTHENTICATION, "An error occurred while authenticating with google");
     }
 
     listen() {

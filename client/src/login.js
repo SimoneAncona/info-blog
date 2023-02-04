@@ -1,9 +1,12 @@
 function handleCredentialResponse(response) {
 	let xhr = new XMLHttpRequest();
 	xhr.open("POST", "/auth/login/google");
-	xhr.send(`{
-		credential: ${response.credential}
-	}`);
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.send(JSON.stringify(
+		{
+			credential: response.credential
+		}
+	));
 	xhr.onreadystatechange = () => {
 		if (xhr.readyState === 4) {
 			console.log(xhr.responseText);
