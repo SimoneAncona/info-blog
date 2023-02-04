@@ -2,6 +2,6 @@
 	"execMap": {
 		"ts": "tsc"
 	},
-	"watch": ["server/", "index.ts"],
-	"exec": "npm run build  && start http://localhost && node index.js"
+	"watch": ["server/*.ts", "index.ts"],
+	"exec": "npm run build && start http://localhost && node index.js"
 }

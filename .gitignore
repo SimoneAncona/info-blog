@@ -104,8 +104,4 @@ dist
 .tern-port
 
 # JavaSript modules
-index.js
 server/*.js
-
-# Env
-server/.env

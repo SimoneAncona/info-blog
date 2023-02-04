@@ -6,6 +6,7 @@ dotenv.config();
 function googleVerify(token: string) {
 	const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 	async function verify() {
+		console.log("sadfasdf");
 		const ticket = await googleClient.verifyIdToken({
 			idToken: token,
 			audience: process.env.GOOGLE_CLIENT_ID
