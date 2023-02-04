@@ -1,8 +1,6 @@
 import { DbHandler } from "./dbHandler";
 import * as express from "express";
 import * as cors from "cors";
-import * as fs from "fs";
-import * as bodyParser from "body-parser";
 import * as dotenv from "dotenv";
 import * as path from "path";
 import * as auth from "./auth";
@@ -18,6 +16,7 @@ export class ClientRequestsHandler {
         
         this.pageRequest();
         this.resourcesRequest();
+        this.authRequest();
     }
 
     private resolvePath(str: string): string {
@@ -68,7 +67,9 @@ export class ClientRequestsHandler {
 
     // ---------------------- AUTHENTICATION ----------------------
     private authRequest() {
-        // app.post()
+        app.post("auth/login/google", (req, res) => {
+            auth.googleVerify(req.body.credential);
+        })
     }
 
     listen() {

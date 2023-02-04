@@ -1,5 +1,14 @@
 function handleCredentialResponse(response) {
-	// HTTP REQUEST TO SERVER
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", "/auth/login/google");
+	xhr.send(`{
+		credential: ${response.credential}
+	}`);
+	xhr.onreadystatechange = () => {
+		if (xhr.readyState === 4) {
+			console.log(xhr.responseText);
+		}
+	}
 }
 
 window.addEventListener("load", function () {
@@ -8,7 +17,7 @@ window.addEventListener("load", function () {
 		callback: handleCredentialResponse
 	});
 	google.accounts.id.renderButton(
-		document.getElementById("google_login"),
+		document.getElementById("google-login"),
 		{ theme: "outline", size: "large" }  // customization attributes
 	);
 });

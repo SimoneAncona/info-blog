@@ -2,12 +2,12 @@
     background: linear-gradient(180deg, var(--light) 0%, var(--light) 60%, var(--main-color-50) 100%);
 }
 
-#google_oauth_img {
+#google-oauth-img {
     width: 20px;
     margin-inline: 5px;
 }
 
-#github_oauth_img {
+#github-oauth-img {
     width: 20px;
     margin-inline: 5px;
 }
