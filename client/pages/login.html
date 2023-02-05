@@ -11,6 +11,7 @@
     <title>Login</title>
     <script src="/resources/js"></script>
     <script src="/resources/js/login"></script>
+    <script src="/resources/js/auth"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -28,19 +29,19 @@
         </div>
     </header>
     <div class="column-container-center h100" id="background">
-        <div class="card bkg-dark-color light-color">
+        <div class="card bkg-dark-color light-color" id="login-card">
             <h1 class="title">Accedi</h1>
-            <div class="column-container-start">
+            <div class="column-container-start" id="login-form">
                 <h2 class="smaller">Nome utente</h2>
-                <input type="text" class="input bkg-dark-color light-color">
+                <input type="text" class="input bkg-dark-color light-color" id="username">
                 <h2 class="smaller">Password</h2>
-                <input type="password" class="input bkg-dark-color light-color">
-                <div class="clickable button">Entra</div>
+                <input type="password" class="input bkg-dark-color light-color" id="password">
+                <div class="clickable button" onclick="login()">Entra</div>
             </div>
             <div class="column-container max-width" id="otherwise">
                 <h2 class="smaller">oppure</h2>
             </div>
-            <div class="column-container-start max-width">
+            <div class="column-container max-width">
                 <div class="clickable" id="google-login">
                     <img src="/resources/images/google.png" id="google-oauth-img">
                     Entra con Google

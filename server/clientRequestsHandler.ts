@@ -6,7 +6,7 @@ import * as path from "path";
 import * as auth from "./auth";
 import * as bodyParser from "body-parser";
 import { TokenPayload } from "google-auth-library";
-import { error } from "./commonErrorHandler";
+import { displayError, error } from "./commonErrorHandler";
 import { ErrorType } from "./commonErrorHandler";
 
 const app = express();
@@ -73,6 +73,7 @@ export class ClientRequestsHandler {
 
     // ---------------------- AUTHENTICATION ----------------------
     private authRequest() {
+        // login with google
         app.post("/auth/login/google", async (req, res) => {
             console.log(req.body);
             const payload = await auth.googleVerify(req.body.credential);
@@ -89,7 +90,19 @@ export class ClientRequestsHandler {
 
         app.post("/auth/get-salt", (req, res) => {
             res.send(process.env.SHA256_SALT);
-        })
+        });
+
+        // normal login
+        app.post("/auth/login", async (req, res) => {
+            const queryString = "SELECT * FROM `user` WHERE username = ? AND `password` = ?";
+            const dbResponse = await sendQuery(queryString, [req.body.username, req.body.password], (err) => {
+                res.send(err);
+                displayError(err);
+            });
+            if (dbResponse.length === 0) {
+                res.send(error("incorrectCredentials", "Credentials are incorrect", false));
+            }
+        });
     }
 
     private handleGoogleAuth(payload: TokenPayload) {
@@ -97,7 +110,7 @@ export class ClientRequestsHandler {
     }
 
     private handleGoogleAuthError() {
-        return error(ErrorType.AUTHENTICATION, "An error occurred while authenticating with google");
+        return error("authentication", "An error occurred while authenticating with google");
     }
 
     listen() {

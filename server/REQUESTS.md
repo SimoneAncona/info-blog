@@ -18,3 +18,10 @@
 ```
 - `/auth/client-id/google` get the google client id
 - `/auth/get-salt` get sha256 salt
+- `/auth/login` normal login. require json body
+```json
+{
+	"username": "string",
+	"password": "sha256 with salt password"
+}
+```

@@ -6,6 +6,7 @@
 - `main-color`: set color to main
 - `main-color-50`: set color to main 50 alpha
 - `gray-color` set color to gray
+- `red-color` set color to red
 - `secondary-color` set color to secondary
 - `clickable`: cursor pointer
 - `bkg-light-color`: set backgournd color to light

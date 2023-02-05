@@ -24,3 +24,18 @@ window.addEventListener("load", function () {
 		{ theme: "outline", size: "large" }  // customization attributes
 	);
 });
+
+async function login() {
+	let userInfo = {
+		username: username.value,
+		password: await sha256salty(password.value)
+	}
+	const response = await post("/auth/login", userInfo, (err) => {
+		if (err.type === "incorrectCredentials") {
+			let login = document.getElementById("login-form");
+			login.innerHTML = "<h1 class='smaller red-color' id='incorrect-credentials' style='margin-bottom: 2px; opacity: 0'>Credenziali errate. Riprova</h1>" + login.innerHTML;
+			fadeIn(document.querySelector("#incorrect-credentials"));
+			setTimeout(() => fadeOut(document.querySelector("#incorrect-credentials")), 2500);
+		}
+	});
+}

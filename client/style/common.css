@@ -21,6 +21,7 @@
 	--gray-50: rgb(168, 168, 168, 0.5);
 	--secondary-color: rgb(193, 170, 2);
 
+	--red: rgb(229, 30, 30);
 
 	font-family: Gotham;
 	background-color: var(--light);
@@ -103,6 +104,10 @@ nav {
 
 .main-color {
 	color: var(--main-color);
+}
+
+.red-color {
+	color: var(--red);
 }
 
 .main-color-50 {
@@ -195,6 +200,7 @@ p {
 	align-items: center;
 	border-radius: 8px;
 	padding: 20px;
+	transition: all 0.4s ease;
 }
 
 p {
@@ -327,6 +333,22 @@ a:hover::before {
 #footer-info {
 	column-gap: 25px;
 	margin-bottom: 30px;
+}
+
+#error-banner {
+	position: fixed;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: var(--dark);
+	color: var(--light);
+	transition: all 0.4s ease;
+	padding: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 8px;
+	column-gap: 5px;
 }
 
 @media (prefers-color-scheme: dark) {
