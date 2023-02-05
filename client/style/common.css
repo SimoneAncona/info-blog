@@ -21,7 +21,7 @@
 	--gray-50: rgb(168, 168, 168, 0.5);
 	--secondary-color: rgb(193, 170, 2);
 
-	--red: rgb(229, 30, 30);
+	--red: rgb(245, 92, 92);
 
 	font-family: Gotham;
 	background-color: var(--light);
@@ -362,6 +362,8 @@ a:hover::before {
 		--gray: rgb(71, 73, 79);
 		--secondary-color: rgb(210, 185, 0);
 		--gray-50: rgb(71, 73, 79, 0.5);
+
+		--red: rgb(229, 30, 30);
 	}
 
 	::-moz-selection {
