@@ -13,6 +13,7 @@ CREATE TABLE `user` (
 	`birth` DATE NOT NULL,
 	`role` VARCHAR(255) NOT NULL DEFAULT "rookie",
 	`level` INT NOT NULL DEFAULT 0,
+	`phone` VARCHAR(255),
 	PRIMARY KEY(`username`),
 	FOREIGN KEY(`role`) REFERENCES `role`(`name`)
 );

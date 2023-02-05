@@ -1,19 +1,3 @@
-function handleCredentialResponse(response) {
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", "/auth/login/google");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.send(JSON.stringify(
-		{
-			credential: response.credential
-		}
-	));
-	xhr.onreadystatechange = () => {
-		if (xhr.readyState === 4) {
-			console.log(xhr.responseText);
-		}
-	}
-}
-
 window.addEventListener("load", function () {
 	google.accounts.id.initialize({
 		client_id: "972668876196-u12ssita5n65732shp04c8bfngmlcvhe.apps.googleusercontent.com",
@@ -33,7 +17,7 @@ async function login() {
 	const response = await post("/auth/login", userInfo, (err) => {
 		if (err.type === "incorrectCredentials") {
 			let login = document.getElementById("login-form");
-			login.innerHTML = "<h1 class='smaller red-color' id='incorrect-credentials' style='margin-bottom: 2px; opacity: 0; position: absolute'>Credenziali errate. Riprova</h1>" + login.innerHTML;
+			login.innerHTML = "<h2 class='smaller red-color' id='incorrect-credentials' style='margin-bottom: 2px; opacity: 0; position: absolute'>Credenziali errate. Riprova</h1>" + login.innerHTML;
 			fadeIn(document.querySelector("#incorrect-credentials"));
 			setTimeout(() => fadeOut(document.querySelector("#incorrect-credentials")), 2500);
 		}

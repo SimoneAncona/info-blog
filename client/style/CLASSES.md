@@ -15,6 +15,7 @@
 - `bkg-main-color-50`: set backgournd color to main 50 alpha
 - `bkg-gray-color` set backgournd color to gray
 - `bkg-secondary-color` set backgournd color to secondary
+- `bkg-red-color` set backgournd color to red
 - `bottom-shadow` set gray bottom shadow
 
 ## Containers

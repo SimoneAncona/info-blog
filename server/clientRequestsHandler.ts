@@ -103,6 +103,17 @@ export class ClientRequestsHandler {
                 res.send(error("incorrectCredentials", "Credentials are incorrect", false));
             }
         });
+
+        app.post("/auth/check-username", async (req, res) => {
+            const queryString = "SELECT * FROM `user` WHERE username = ?";
+            const dbResponse = await sendQuery(queryString, [req.body.username], (err) => {
+                res.send(err);
+                displayError(err);
+            });
+            res.send({
+                exist: dbResponse.length === 1
+            });
+        })
     }
 
     private handleGoogleAuth(payload: TokenPayload) {

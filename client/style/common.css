@@ -146,6 +146,10 @@ nav {
 	background-color: var(--secondary-color);
 }
 
+.bkg-red-color {
+	background-color: var(--red);
+}
+
 .clickable:hover {
 	cursor: pointer;
 }
@@ -363,7 +367,7 @@ a:hover::before {
 		--secondary-color: rgb(210, 185, 0);
 		--gray-50: rgb(71, 73, 79, 0.5);
 
-		--red: rgb(229, 30, 30);
+		--red: rgb(245, 55, 55);
 	}
 
 	::-moz-selection {

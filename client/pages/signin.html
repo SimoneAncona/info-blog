@@ -12,6 +12,7 @@
     <script src="/resources/js"></script>
     <script src="/resources/js/signin"></script>
     <script src="/resources/js/auth"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <header>
@@ -27,25 +28,38 @@
             <p>.IT</p>
         </div>
     </header>
+    <div id="warnings"></div>
     <div class="column-container-center h100" id="background">
         <div class="card bkg-dark-color light-color" id="signin-card">
             <h1 class="title">Registrati</h1>
-            <div class="column-container-start" id="signin-form">
-                <h2 class="smaller">Nome utente</h2>
-                <input type="text" class="input bkg-dark-color light-color">
-                <h2 class="smaller">Password</h2>
-                <input type="password" class="input bkg-dark-color light-color">
-                <div class="clickable button">Entra</div>
+            <div class="inline-container" id="signin-form">
+                <div class="column-container-start">
+                    <h2 class="smaller">Nome utente</h2>
+                    <input type="text" class="input bkg-dark-color light-color" id="username">
+                    <h2 class="smaller">Password</h2>
+                    <input type="password" class="input bkg-dark-color light-color" id="password">
+                    <h2 class="smaller">Conferma password</h2>
+                    <input type="password" class="input bkg-dark-color light-color" id="confirm-password">
+                </div>
+                <div class="column-container-start">
+                    <h2 class="smaller">Email</h2>
+                    <input type="text" class="input bkg-dark-color light-color" id="email">
+                    <h2 class="smaller">Data di nascita</h2>
+                    <input type="date" class="input bkg-dark-color light-color" id="birth-date">
+                    <h2 class="smaller">Numero di telefono (opzionale)</h2>
+                    <input type="tel" class="input bkg-dark-color light-color">
+                </div>
             </div>
+            <div class="clickable button">Registrati</div>
             <div class="column-container max-width" id="otherwise">
                 <h2 class="smaller">oppure</h2>
             </div>
-            <div class="column-container-start max-width">
-                <!-- <div class="clickable button">
-                    <img src="/resources/images/google.png" id="google-oauth-img">
-                    Entra con Google
+            <div class="column-container max-width">
+                <div class="clickable" id="google-signin">
+                    <!-- <img src="/resources/images/google.png" id="google-oauth-img">
+                    Entra con Google -->
                 </div>
-                <div class="clickable button">
+                <!-- <div class="clickable button">
                     <img src="/resources/images/github.png" id="github-oauth-img">
                     Entra con GitHub
                 </div> -->

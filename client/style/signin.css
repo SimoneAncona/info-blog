@@ -49,3 +49,12 @@ header {
 #signin-card {
     min-width: 23%;
 }
+
+#signin-form {
+    column-gap: 20px;
+}
+
+.warning {
+    padding: 10px;
+    border-radius: 5px;
+}
