@@ -85,6 +85,10 @@ export class ClientRequestsHandler {
 
         app.post("/auth/client-id/google", (req, res) => {
             res.send(process.env.GOOGLE_CLIENT_ID);
+        });
+
+        app.post("/auth/get-salt", (req, res) => {
+            res.send(process.env.SHA256_SALT);
         })
     }
 

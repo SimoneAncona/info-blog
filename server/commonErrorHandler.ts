@@ -3,10 +3,11 @@ dotenv.config();
 
 export enum ErrorType {
 	AUTHENTICATION,
-
+	DATABASE_QUERY_ERROR,
+	DATABASE_CONNECTION_ERROR
 }
 
-interface ErrorObject {
+export interface ErrorObject {
 	type: ErrorType,
 	message: string,
 	trace: string | undefined

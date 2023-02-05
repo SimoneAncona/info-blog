@@ -17,3 +17,4 @@
 }
 ```
 - `/auth/client-id/google` get the google client id
+- `/auth/get-salt` get sha256 salt
