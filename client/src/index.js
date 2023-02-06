@@ -91,41 +91,6 @@ function showCourses() {
 	}
 }
 
-function consentCookie() {
-	let cookieBanner = document.getElementById("cookie-banner");
-	cookieBanner.style.opacity = 0;
-	setTimeout(() => {
-		cookieBanner.remove();
-	}, 1000);
-	setCookie(technicalCookie, true, 1000);
-}
-
-function setCookie(name, value, expiredays) {
-	const date = new Date();
-	date.setTime(date.getTime() + (expiredays * 24 * 60 * 60 * 1000));
-	let expires = "expires=" + date.toUTCString();
-	document.cookie = name + "=" + value + ";" + expires + ";path=/";
-}
-
-function getCookie(cname) {
-	let name = cname + "=";
-	let ca = document.cookie.split(';');
-	for(let i = 0; i < ca.length; i++) {
-	  	let c = ca[i];
-	  	while (c.charAt(0) == ' ') {
-			c = c.substring(1);
-	  	}
-	  	if (c.indexOf(name) == 0) {
-			return c.substring(name.length, c.length);
-	  	}
-	}
-	return null;
-}
-
-function checkCookie(name) {
-	return getCookie(name) != null;
-}
-
 function scrollDown() {
 	let exploreTop = getCoords(document.getElementById("explore-section")).top;
 	let headerHeight = document.getElementsByTagName("header")[0].offsetHeight;

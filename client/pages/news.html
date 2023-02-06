@@ -5,14 +5,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/resources/css">
-    <link rel="stylesheet" href="/resources/css/cookie-info">
+    <link rel="stylesheet" href="/resources/css/index">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="icon" type="image/x-icon" href="resources/images/favicon.ico">
-    <title>Informativa sulla privacy</title>
+    <title>Notizie e altro</title>
     <script src="/resources/js"></script>
-    <script src="/resources/js/cookie-info"></script>
+    <script src="/resources/js/news"></script>
 </head>
 <body>
+    <div class="scroll-container"></div>
+    <div id="cookie-banner" class="inline-container bkg-dark-color">
+        <div class="column-container-start">
+            <h2>Questo sito utilizza i cookie</h2>
+            <p>
+                I cookie servono per migliorare l'esperienza all'interno del sito, per offrire funzionalità e per poter accedere alle aree protette del sito.
+                <br>
+                Questo sito utilizza solo i cookie tecnici, ovvero i cookie necessari e indispensabili per la navigazione all'interno della nostra piattaforma
+                <br>
+                Chiudendo o premendo sul pulsante <strong>Accetto i cookie necessari</strong> accetterà l'utilizzo dei cookie obbligatori e potrà navigare nella piattaforma
+            </p>
+        </div>
+        <div class="column-container-start">
+            <div class="clickable button" onclick="consentCookie()">Accetto i cookie necessari</div>
+            <div class="clickable button" onclick="window.location.href = '/cookie-info/'">Maggiori informazioni</div>
+        </div>
+    </div>
     <header>
         <div class="inline-container main-logo clickable" title="Ritorna alla home page">
             <h1>
@@ -35,7 +52,7 @@
     </header>
     <div id="header-spacer"></div>
     <main>
-        <h2>Informativa completa sull'uso dei cookie</h2>
+
     </main>
     <footer class="column-container">
         <div class="inline-container-start" id="footer-info">
@@ -45,7 +62,7 @@
                 </h2>
                 <div class="column-container-start">
                     <a class="clickable light-color" href="">Chi siamo</a>
-                    <a class="clickable light-color" href="">Informativa sulla privacy</a>
+                    <a class="clickable light-color" href="/cookie-info">Informativa sulla privacy</a>
                 </div>
             </div>
             <div id="links" class="column-container">

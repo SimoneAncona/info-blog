@@ -1,4 +1,4 @@
--- Active: 1675613230859@@192.168.178.25@3306@info_world
+-- Active: 1675672694253@@127.0.0.1@3306@info_world
 CREATE DATABASE info_world;
 USE info_world;
 CREATE TABLE `role` (
