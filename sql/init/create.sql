@@ -14,6 +14,7 @@ CREATE TABLE `user` (
 	`role` VARCHAR(255) NOT NULL DEFAULT "rookie",
 	`level` INT NOT NULL DEFAULT 0,
 	`phone` VARCHAR(255),
+	`two_step_auth` BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY(`username`),
 	FOREIGN KEY(`role`) REFERENCES `role`(`name`)
 );
