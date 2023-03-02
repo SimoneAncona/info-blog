@@ -98,7 +98,7 @@ function hideError() {
 }
 
 function httpRequset(method, url, data, onerror) {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		let xhr = new XMLHttpRequest();
 		xhr.open(method, url);
 		xhr.setRequestHeader("Content-Type", "application/json");
@@ -106,7 +106,7 @@ function httpRequset(method, url, data, onerror) {
 		xhr.onerror = () => {
 			let err = new ErrorObject("serverInteraction", "An error occurred while sending an HTTP POST request");
 			onerror(err);
-			rejects(err);
+			reject(err);
 		}
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 4) {
@@ -118,7 +118,7 @@ function httpRequset(method, url, data, onerror) {
 				}
 				if (isAnError(response)) {
 					onerror(response);
-					rejects(response);
+					reject(response);
 				}
 				resolve(response);
 			}

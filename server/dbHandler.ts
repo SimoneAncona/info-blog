@@ -1,6 +1,6 @@
 import * as mysql from "mysql2";
 import * as dotenv from "dotenv";
-import { ErrorObject } from "./commonErrorHandler";
+import { ErrorObject } from "./interfaces";
 import * as err from "./commonErrorHandler";
 
 dotenv.config();
@@ -13,7 +13,7 @@ const connectionData: mysql.ConnectionOptions = {
 	database: process.env.MYSQL_DATABASE
 }
 
-export function sendQuery(queryString: string, values: Array<any>, onerror = err.displayError): Promise<Array<mysql.RowDataPacket>> {
+export function sendQuery(queryString: string, values: Array<any> = []): Promise<Array<mysql.RowDataPacket> | ErrorObject> {
 	let connection = mysql.createConnection(connectionData);
 	let promise: Promise<Array<mysql.RowDataPacket>>;
 	promise = new Promise((resolve, rejects) => {
@@ -23,8 +23,7 @@ export function sendQuery(queryString: string, values: Array<any>, onerror = err
 			(error, result) => {
 				if (error) {
 					let commonError = err.error("databaseQueryError", error.message);
-					onerror(commonError);
-					rejects([]);
+					rejects(commonError);
 				}
 				resolve(<Array<mysql.RowDataPacket>>result);
 			}

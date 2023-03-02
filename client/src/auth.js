@@ -9,18 +9,36 @@ async function sha256salty(password) {
 	return hashHex;
 }
 
-function handleCredentialResponse(response) {
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", "/auth/login/google");
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.send(JSON.stringify(
-		{
-			credential: response.credential
-		}
-	));
-	xhr.onreadystatechange = () => {
-		if (xhr.readyState === 4) {
-			console.log(xhr.responseText);
-		}
+async function handleGoogleLogin(response) {
+	let res;
+	try {
+		res = await post("/auth/login/google", { credential: response.credential });
+	} catch {
+		return;
 	}
+	window.location.replace("/");
 }
+
+async function handleGoogleSignin(response) {
+	let res;
+	try {
+		res = await post("/auth/login/google", { credential: response.credential });
+	} catch {
+		return;
+	}
+	window.location.replace("/");
+}
+
+window.addEventListener("load", async () => {
+	let res;
+	try {
+		res = await post("/auth/login/google");
+	} catch {
+		return;
+	}
+
+	document.getElementById("login-button").remove();
+	document.getElementsByTagName("nav")[0].innerHTML += `
+	<img alt='${res.username} profile picture' src='/media/${res.profilePicture}' class='avatar' onclick=''>
+	`
+})

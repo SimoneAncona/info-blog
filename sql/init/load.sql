@@ -1,4 +1,4 @@
--- Active: 1675672694253@@127.0.0.1@3306@info_world
+-- Active: 1677797151222@@127.0.0.1@3306@infoworld
 USE info_world;
 INSERT INTO `role`(`name`)
 VALUES 
@@ -18,7 +18,7 @@ VALUES
 	("postQuestions"),
 	("answerQuestions"),
 	("createSandboxes");
-INSERT INTO `role_permission` (`role`, `permission`)
+INSERT INTO `rolePermission` (`role`, `permission`)
 VALUES
 	("admin", "publishArticles"),
 	("admin", "publishTutorials"),
