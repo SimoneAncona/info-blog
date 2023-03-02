@@ -76,12 +76,14 @@ export class ClientRequestsHandler {
         // login with google
         app.post("/auth/login/google", async (req, res) => {
             console.log(req.body);
-            const payload = await auth.googleVerify(req.body.credential);
-            if (payload === undefined) {
-                res.send(this.handleGoogleAuthError());
+            let payload;
+            try {
+                payload = await auth.googleVerify(req.body.credential);
+            } catch {
+                res.send(error("authentication", "An error occurred while logging in with google"));
                 return;
-            } 
-            res.send(this.handleGoogleAuth(payload));
+            }
+            res.send(auth.handleGoogleAuth(payload, req.cookies));
         });
 
         app.post("/auth/client-id/google", (req, res) => {
@@ -116,12 +118,8 @@ export class ClientRequestsHandler {
         })
     }
 
-    private handleGoogleAuth(payload: TokenPayload) {
-
-    }
-
     private handleGoogleAuthError() {
-        return error("authentication", "An error occurred while authenticating with google");
+        
     }
 
     listen() {

@@ -19,8 +19,8 @@ CREATE TABLE `user` (
 );
 CREATE TABLE `article` (
 	`id` INT AUTO_INCREMENT,
-	title VARCHAR(255) NOT NULL,
-	subtitle VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255) NOT NULL,
+	`subtitle` VARCHAR(255) NOT NULL,
 	`user` VARCHAR(255) NOT NULL,
 	PRIMARY KEY(`id`),
 	FOREIGN KEY(`user`) REFERENCES `user`(username)
@@ -39,3 +39,7 @@ CREATE TABLE `role_permission` (
 CREATE TABLE `media` (
 
 );
+
+CREATE TABLE `session` (
+
+)
