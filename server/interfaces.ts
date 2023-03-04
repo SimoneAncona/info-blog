@@ -1,10 +1,12 @@
+import { RoleName } from "./roleInterface"
+
 export type User = {
 	username: string
 	password: string
 	email: string
 	isGoogle: boolean
 	birth: string
-	role: string
+	role: RoleName
 	level: number
 	phone: string
 	twoStepAuth: boolean

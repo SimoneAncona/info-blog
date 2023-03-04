@@ -7,14 +7,15 @@ import * as auth from "./auth";
 import * as bodyParser from "body-parser";
 import { TokenPayload } from "google-auth-library";
 import { error, isError } from "./commonErrorHandler";
-import { ErrorObject, ErrorType } from "./interfaces";
+import { ErrorObject, ErrorType, User } from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as fs from "fs";
+import { checkBirth, checkUsername } from "./inputCheck";
 const cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 export class ClientRequestsHandler {
@@ -22,8 +23,8 @@ export class ClientRequestsHandler {
 
 	constructor() {
 		dotenv.config();
-		this.port = process.env.PORT || 3000;  
-		
+		this.port = process.env.PORT || 3000;
+
 		this.pageRequest();
 		this.resourcesRequest();
 		this.authRequest();
@@ -42,20 +43,41 @@ export class ClientRequestsHandler {
 		});
 
 		app.get("/signin/", async (req, res) => {
-			let email = req.query.email;
+			let email = req.query.email as string;
 			if (email === undefined) {
 				res.sendFile(this.resolvePath("../client/pages/signin.html"));
 				return;
 			}
 			let dbResponse;
 			try {
-				dbResponse = await sendQuery("SELECT * FROM `pendingRegistration` WHERE `email` = ?", [req.query.email])
+				dbResponse = await sendQuery("SELECT * FROM `pendingRegistration` WHERE `email` = ?", [email])
 			} catch (e) {
 				res.send(e);
 				return;
 			}
 			if ((<Array<RowDataPacket>>dbResponse).length === 0) {
-				res.sendFile(this.resolvePath("../client/pages/error.html"))
+				res.sendFile(this.resolvePath("../client/pages/error.html"));
+				return;
+			}
+
+			// if it's not registered need to register
+			let r;
+			try {
+				r = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ?", [email]);
+			} catch (e) {
+				res.send(e as ErrorObject);
+				return;
+			}
+
+			if ((<Array<RowDataPacket>>r).length != 0) {
+				for (let row of (<Array<RowDataPacket>>r)) {
+					if (row.email === email && row.pendingSecret === req.cookies.googleSecret) {
+						res.sendFile(this.resolvePath("../client/pages/google-signin.html"));
+						return;
+					}
+				}
+				res.sendFile(this.resolvePath("../client/pages/error.html"));
+				return;
 			}
 			res.sendFile(this.resolvePath("../client/pages/google-signin.html"));
 		})
@@ -100,13 +122,13 @@ export class ClientRequestsHandler {
 	private authRequest() {
 		// login with google
 		app.post("/auth/login/google", async (req, res) => {
-			const user = await auth.handleAutoLoginWithSessions(req.cookies);
-			if (isError(user)) {
-				res.send(user);
+			const session = await auth.handleAutoLoginWithSessions(req.cookies);
+			if (isError(session)) {
+				res.send(session);
 				return;
 			}
-			if (user !== undefined) {
-				res.send(user);
+			if (session !== undefined) {
+				res.send(session);
 				return;
 			}
 			if (!("credential" in req.body)) {
@@ -120,8 +142,121 @@ export class ClientRequestsHandler {
 				res.send(error("authentication", "An error occurred while logging in with google"));
 				return;
 			}
-			res.send(await auth.handleGoogleAuth(payload, res.cookie));
+
+			if (
+				payload === undefined ||
+				payload.email === undefined ||
+				payload.name === undefined
+			) {
+				res.send(error("authentication", "An error occurred while authenticating with google"));
+				return;
+			}
+
+			// check if exists in database
+			const user = await auth.getUser(payload.email);
+			if (isError(user)) {
+				res.send(user as ErrorObject);
+				return;
+			}
+
+			let googleSecret: string;
+			if (!("googleSecret" in req.cookies)) {
+				googleSecret = auth.casualSecret();
+				res.cookie("googleSecret", googleSecret, { expires: auth.expiresSession().toDate() });
+			} else {
+				googleSecret = req.cookies.googleSecret;
+			}
+
+			// check if it is registered
+			if (user === undefined) {
+				// if it's not registered need to register
+				let r;
+				try {
+					r = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ?", [payload.email]);
+				} catch (e) {
+					res.send(e as ErrorObject);
+					return;
+				}
+
+				if ((<Array<RowDataPacket>>r).length != 0) {
+					for (let row of (<Array<RowDataPacket>>r)) {
+						if (row.email === payload.email && row.pendingSecret === req.cookies.googleSecret) {
+							res.send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
+							return;
+						}
+					}
+					res.send(error("authentication", "Cannot confirm the email", false, { email: payload.email }));
+					return;
+				}
+
+				try {
+					await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`, `credential`) VALUES (?, TRUE, ?, ?)", [payload.email, req.cookies.googleSecret, req.body.credential]);
+				} catch (e) {
+					res.send(e as ErrorObject);
+					return;
+				}
+				res.send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
+				return;
+			}
+
+			const secret = auth.casualSecret();
+			const expires = auth.expiresSession();
+
+			try {
+				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (user as User).username]);
+			} catch (e) {
+				res.send(e as ErrorObject);
+				return;
+			}
+
+			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
+			res.cookie("username", (user as User).username, { expires: expires.toDate() });
+
+			res.send(user as User);
 		});
+
+		app.post("/auth/confirm/google", async (req, res) => {
+			let dbResponse;
+			try {
+				dbResponse = await sendQuery("SELECT * FROM pendingRegistration WHERE email = ? AND pendingSecret = ?", [req.body.email, req.cookies.googleSecret]);
+			} catch (e) {
+				res.send(e);
+				return;
+			}
+
+			if ((dbResponse as Array<RowDataPacket>).length === 0) {
+				res.send(error("authentication", "Cannot confirm email"));
+				return;
+			}
+
+			let checkUser = checkUsername(req.body.username);
+			if (checkUser != null) {
+				res.send(checkUser);
+				return;
+			}
+
+			let checkBir = checkBirth(req.body.birth);
+			if (checkBir != null) {
+				res.send(checkBir);
+				return;
+			}
+
+			try {
+				auth.setUser({
+					username: req.body.username,
+					password: "",
+					email: req.body.email,
+					isGoogle: true,
+					birth: req.body.birth,
+					role: "rookie",
+					level: 0,
+					phone: req.body.phone,
+					twoStepAuth: false
+				});
+			} catch (e) {
+				res.send(e);
+			}
+		})
 
 		app.post("/auth/client-id/google", (req, res) => {
 			res.send(process.env.GOOGLE_CLIENT_ID);
@@ -150,7 +285,7 @@ export class ClientRequestsHandler {
 		app.post("/auth/check-username", async (req, res) => {
 			const queryString = "SELECT * FROM `user` WHERE username = ?";
 			let dbResponse;
-			
+
 			try {
 				dbResponse = await sendQuery(queryString, [req.body.username, req.body.password]);
 			} catch (e) {
@@ -159,7 +294,7 @@ export class ClientRequestsHandler {
 			}
 
 
-			res.send({exists: (dbResponse as Array<RowDataPacket>).length != 0});
+			res.send({ exists: (dbResponse as Array<RowDataPacket>).length != 0 });
 
 		})
 	}

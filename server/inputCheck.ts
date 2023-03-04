@@ -7,3 +7,6 @@ export function checkUsername(username: string): null | ErrorObject {
 	return null
 }
 
+export function checkBirth(birth: string) {
+
+}

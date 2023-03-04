@@ -56,7 +56,10 @@ CREATE TABLE `session` (
 );
 
 CREATE TABLE `pendingRegistration` (
+	`id` INT AUTO_INCREMENT,
 	`email` VARCHAR(255) NOT NULL,
 	`isGoogle` BOOLEAN NOT NULL,
-	PRIMARY KEY(`email`)
-)
+	`pendingSecret` CHAR(64) NOT NULL,
+	`credential` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);

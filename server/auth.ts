@@ -2,7 +2,7 @@ import { OAuth2Client, TokenPayload } from "google-auth-library";
 import { sendQuery } from "./dbHandler";
 import * as dotenv from "dotenv";
 import { error, isError } from "./commonErrorHandler";
-import { ErrorObject, User} from "./interfaces";
+import { ErrorObject, User } from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as moment from "moment";
 import { CookieOptions } from "express";
@@ -49,59 +49,20 @@ export async function handleAutoLoginWithSessions(cookies: any): Promise<undefin
 	} as User;
 }
 
-export async function handleGoogleAuth(payload: TokenPayload | undefined, cookies: any): Promise<ErrorObject | User> {
-	if (
-		payload === undefined ||
-		payload.email === undefined ||
-		payload.name === undefined
-	) 
-	return error("authentication", "An error occurred while authenticating with google");
-	// check if exists in database
-	const user = await getUser(payload.email);
-	if (isError(user)) return user as ErrorObject;
-
-	// check if it is registered
-	if (user === undefined) {
-		try {
-			await sendQuery("INSERT IGNORE INTO `pendingRegistration`(`email`, `isGoogle`) VALUES (?, TRUE)", [payload.email]);
-		} catch (e) {
-			return e as ErrorObject;
-		}
-		return error("registrationRequired", "You must sign in", false, {email: payload.email});
-	}
-	setSession(user as User, cookies);
-	return user as User;
-}
-
-async function setSession(user: User, cookieSetter: (name: string, val: string, options: CookieOptions) => any): Promise<ErrorObject | null> {
-	const secret = casualSessionSecret();
-	const expires = expiresSession();
-
-	try {
-		await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, user.username]);
-	} catch(e) {
-		return e as ErrorObject;
-	}
-
-	cookieSetter("sessionSecrete", secret, { expires: expires.toDate() });
-	cookieSetter("username", user.username, { expires: expires.toDate() });
-	return null;
-}
-
-function casualSessionSecret(): string {
+export function casualSecret(): string {
 	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	let s = "";
 	for (let i = 0; i < 64; i++) {
-		s = chars[Math.round(Math.random() * chars.length - 1)];
+		s += chars[Math.round(Math.random() * (chars.length - 1))];
 	}
 	return s;
 }
 
-function expiresSession(): moment.Moment {
+export function expiresSession(): moment.Moment {
 	return moment().add(3, "month");
 }
 
-async function getUser(email: string): Promise<User | ErrorObject | undefined> {
+export async function getUser(email: string): Promise<User | ErrorObject | undefined> {
 	let dbResponse;
 	try {
 		dbResponse = await sendQuery("SELECT * FROM `user` WHERE `email` = ?", [email]);
@@ -109,6 +70,26 @@ async function getUser(email: string): Promise<User | ErrorObject | undefined> {
 		return e as ErrorObject;
 	}
 	return (dbResponse as Array<RowDataPacket>)[0] as User;
+}
+
+export async function setUser(user: User): Promise<ErrorObject | User> {
+	let dbResponse;
+	try {
+		dbResponse = await sendQuery("INSERT INTO `user`(`username`, `password`, `email`, `isGoogle`, `birth`, `role`, `level`, `phone`, `twoStepAuth`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+			user.username,
+			user.password,
+			user.email,
+			user.isGoogle,
+			user.birth,
+			user.role,
+			user.level,
+			user.phone,
+			user.twoStepAuth
+		])
+	} catch (e) {
+		return e as ErrorObject;
+	}
+	return user;
 }
 
 export { googleVerify };
