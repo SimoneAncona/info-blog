@@ -4,6 +4,7 @@
   "description": "A site",
   "main": "index.js",
   "scripts": {
+    "dev": "tsc --build && node index.js",
     "build": "tsc --build",
     "start": "tsc --build && start node index.js && timeout 1 && start http://localhost",
     "test": "echo \"Error: no test specified\" && exit 1"

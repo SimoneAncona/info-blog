@@ -5,6 +5,7 @@ import { error, isError } from "./commonErrorHandler";
 import { ErrorObject, User} from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as moment from "moment";
+import { CookieOptions } from "express";
 
 dotenv.config();
 
@@ -26,8 +27,12 @@ export async function handleAutoLoginWithSessions(cookies: any): Promise<undefin
 	if (!("sessionSecret" in cookies && "username" in cookies)) return undefined;
 
 	// check session secret
-	const session = await sendQuery("SELECT * FROM user, session WHERE user.username = session.user AND user.username = ? AND session.sessionSecret = ?", [cookies.username, cookies.sessionSecret]);
-	if (isError(session)) return session as ErrorObject;
+	let session;
+	try {
+		session = await sendQuery("SELECT * FROM user, session WHERE user.username = session.user AND user.username = ? AND session.sessionSecret = ?", [cookies.username, cookies.sessionSecret]);
+	} catch (e) {
+		return e as ErrorObject;
+	}
 
 	if ((session as Array<RowDataPacket>).length === 0) return undefined;
 
@@ -56,20 +61,30 @@ export async function handleGoogleAuth(payload: TokenPayload | undefined, cookie
 	if (isError(user)) return user as ErrorObject;
 
 	// check if it is registered
-	if (user === undefined) return error("registrationRequired", "You must sign in");
+	if (user === undefined) {
+		try {
+			await sendQuery("INSERT IGNORE INTO `pendingRegistration`(`email`, `isGoogle`) VALUES (?, TRUE)", [payload.email]);
+		} catch (e) {
+			return e as ErrorObject;
+		}
+		return error("registrationRequired", "You must sign in", false, {email: payload.email});
+	}
 	setSession(user as User, cookies);
 	return user as User;
 }
 
-async function setSession(user: User, cookies: any): Promise<ErrorObject | null> {
+async function setSession(user: User, cookieSetter: (name: string, val: string, options: CookieOptions) => any): Promise<ErrorObject | null> {
 	const secret = casualSessionSecret();
 	const expires = expiresSession();
 
 	try {
-		await sendQuery("INSERT INTO session ()")
+		await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, user.username]);
 	} catch(e) {
 		return e as ErrorObject;
 	}
+
+	cookieSetter("sessionSecrete", secret, { expires: expires.toDate() });
+	cookieSetter("username", user.username, { expires: expires.toDate() });
 	return null;
 }
 
@@ -87,8 +102,12 @@ function expiresSession(): moment.Moment {
 }
 
 async function getUser(email: string): Promise<User | ErrorObject | undefined> {
-	const dbResponse = await sendQuery("SELECT * FROM `user` WHERE `email` = ?", [email]);
-	if (isError(dbResponse)) return dbResponse as ErrorObject;
+	let dbResponse;
+	try {
+		dbResponse = await sendQuery("SELECT * FROM `user` WHERE `email` = ?", [email]);
+	} catch (e) {
+		return e as ErrorObject;
+	}
 	return (dbResponse as Array<RowDataPacket>)[0] as User;
 }
 

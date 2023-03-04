@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it-it">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/resources/css">
+    <link rel="stylesheet" href="/resources/css/signin">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="icon" type="image/x-icon" href="resources/images/favicon.ico">
+    <title>Registrazione</title>
+    <script src="/resources/js"></script>
+    <script src="/resources/js/google-signin"></script>
+    <script src="/resources/js/signin-input-check"></script>
+    <script src="/resources/js/auth"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <header>
+        <div class="inline-container main-logo clickable" title="Ritorna alla home page">
+            <h1>
+                <span class="main-color">
+                    info
+                </span>
+                <span>
+                    world
+                </span>
+            </h1>
+            <p>.IT</p>
+        </div>
+    </header>
+	<div id="warnings"></div>
+	<div class="column-container-center h100" id="background">
+        <div class="card bkg-dark-color light-color" id="signin-card">
+            <h1 class="title">Completa la registrazione</h1>
+			<h2 class="smaller">Abbiamo bisogno ancora di qualche informazione</h2>
+			<br>
+            <div class="column-container-start" id="signin-form">
+				<h2 class="smaller">Nome utente</h2>
+				<input type="text" class="input bkg-dark-color light-color" id="username">
+				<h2 class="smaller">Numero di telefono (opzionale)</h2>
+				<input type="tel" class="input bkg-dark-color light-color">
+            </div>
+            <div class="clickable button">Completa la registrazione</div>
+        </div>
+    </div>
+</body>

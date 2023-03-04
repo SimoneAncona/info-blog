@@ -16,10 +16,12 @@ export type ErrorType =
 	"databaseConnectionError" |
 	"incorrectCredentials" |
 	"registrationRequired" |
-	"clientRequestError";
+	"clientRequestError" |
+	"clientInputFormatError";
 
 export type ErrorObject = {
 	type: ErrorType,
 	message: string,
 	trace: string | undefined
+	other: any
 }

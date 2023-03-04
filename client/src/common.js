@@ -40,7 +40,6 @@ function showError(error) {
 	let errorBanner;
 	errorBanner = document.querySelector("#error-banner");
 
-   
 	const errorBannerMessage = `
 		<h1 class="smaller">Si è verificato un errore</h1>
 		<div onclick="hideError()" title="Chiudi finiestra" class="clickable">
@@ -62,6 +61,8 @@ function showError(error) {
 		errorBanner.innerHTML = errorBannerMessage;
 	}
 
+	fadeIn(errorBanner);
+
 	console.error(error);
 }
 
@@ -72,25 +73,32 @@ function validateEmail(email) {
   };
 
 function fadeIn(element) {
-	let opacity = 0;
-	let fadeIn = setInterval(() => {
-		opacity += 0.1;
-		element.style.setProperty("opacity", opacity);
-		if (opacity >= 1) clearInterval(fadeIn);
-	}, 10);
+	return new Promise((resolve) => {
+		let opacity = 0;
+		let fadeIn = setInterval(() => {
+			opacity += 0.1;
+			element.style.setProperty("opacity", opacity);
+			if (opacity >= 1) {
+				clearInterval(fadeIn);
+				resolve()
+			}
+		}, 10);
+	});
 }
 
 function fadeOut(element) {
-	let opacity = 1;
-	let fadeOut = setInterval(() => {
-		opacity -= 0.1;
-		element.style.setProperty("opacity", opacity);
-		console.log(opacity);
-		if (opacity < -1) {
-			clearInterval(fadeOut);
-			element.remove();
-		}
-	}, 10);
+	return new Promise((resolve) => {
+		let opacity = 1;
+		let fadeOut = setInterval(() => {
+			opacity -= 0.1;
+			element.style.setProperty("opacity", opacity);
+			if (opacity < -1) {
+				clearInterval(fadeOut);
+				element.remove();
+				resolve();
+			}
+		}, 10);
+	})
 }
 
 function hideError() {

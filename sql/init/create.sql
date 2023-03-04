@@ -54,3 +54,9 @@ CREATE TABLE `session` (
 	PRIMARY KEY(`id`),
 	FOREIGN KEY(`user`) REFERENCES `user`(`username`)
 );
+
+CREATE TABLE `pendingRegistration` (
+	`email` VARCHAR(255) NOT NULL,
+	`isGoogle` BOOLEAN NOT NULL,
+	PRIMARY KEY(`email`)
+)

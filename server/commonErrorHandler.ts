@@ -2,12 +2,13 @@ import * as dotenv from "dotenv";
 import { ErrorObject, ErrorType } from "./interfaces";
 dotenv.config();
 
-export function error(etype: ErrorType, msg: string, showTrace = true) {
+export function error(etype: ErrorType, msg: string, showTrace = true, other = {}) {
 	let errorObject: ErrorObject;
 	errorObject = {
 		type: etype,
 		message: msg,
-		trace: showTrace ? Error(msg).stack : undefined
+		trace: showTrace ? Error(msg).stack : undefined,
+		other: other
 	}
 
 	if (process.env.TEST) {

@@ -9,6 +9,7 @@ import { TokenPayload } from "google-auth-library";
 import { error, isError } from "./commonErrorHandler";
 import { ErrorObject, ErrorType } from "./interfaces";
 import { RowDataPacket } from "mysql2";
+import * as fs from "fs";
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -29,14 +30,35 @@ export class ClientRequestsHandler {
 	}
 
 	private resolvePath(str: string): string {
-		return path.join(__dirname, str);
+		const p = path.join(__dirname, str);
+		if (fs.existsSync(p)) return p;
+		else return path.join(__dirname, "../client/pages/error404.html");
 	}
 
 	// ---------------------- PAGES ----------------------
 	private pageRequest() {
 		app.get("/", (req, res) => {
-			res.sendFile(this.resolvePath(("../client/pages/index.html")));
+			res.sendFile(this.resolvePath("../client/pages/index.html"));
 		});
+
+		app.get("/signin/", async (req, res) => {
+			let email = req.query.email;
+			if (email === undefined) {
+				res.sendFile(this.resolvePath("../client/pages/signin.html"));
+				return;
+			}
+			let dbResponse;
+			try {
+				dbResponse = await sendQuery("SELECT * FROM `pendingRegistration` WHERE `email` = ?", [req.query.email])
+			} catch (e) {
+				res.send(e);
+				return;
+			}
+			if ((<Array<RowDataPacket>>dbResponse).length === 0) {
+				res.sendFile(this.resolvePath("../client/pages/error.html"))
+			}
+			res.sendFile(this.resolvePath("../client/pages/google-signin.html"));
+		})
 
 		app.get("/:page/", (req, res) => {
 			res.sendFile(this.resolvePath((`../client/pages/${req.params.page}.html`)));
@@ -98,12 +120,8 @@ export class ClientRequestsHandler {
 				res.send(error("authentication", "An error occurred while logging in with google"));
 				return;
 			}
-			res.send(auth.handleGoogleAuth(payload, req.cookies));
+			res.send(await auth.handleGoogleAuth(payload, res.cookie));
 		});
-
-		app.post("/auth/signin/google", async (req, res) => {
-
-		})
 
 		app.post("/auth/client-id/google", (req, res) => {
 			res.send(process.env.GOOGLE_CLIENT_ID);
@@ -116,11 +134,14 @@ export class ClientRequestsHandler {
 		// normal login
 		app.post("/auth/login", async (req, res) => {
 			const queryString = "SELECT * FROM `user` WHERE username = ? AND `password` = ?";
-			const dbResponse = await sendQuery(queryString, [req.body.username, req.body.password]);
-			if (isError(dbResponse)) {
-				res.send(dbResponse);
+			let dbResponse;
+			try {
+				dbResponse = await sendQuery(queryString, [req.body.username, req.body.password]);
+			} catch (e) {
+				res.send(e);
 				return;
 			}
+
 			if ((dbResponse as Array<RowDataPacket>).length === 0) {
 				res.send(error("incorrectCredentials", "Credentials are incorrect", false));
 			}
@@ -128,14 +149,18 @@ export class ClientRequestsHandler {
 
 		app.post("/auth/check-username", async (req, res) => {
 			const queryString = "SELECT * FROM `user` WHERE username = ?";
-			const dbResponse = await sendQuery(queryString, [req.body.username, req.body.password]);
-			if (isError(dbResponse)) {
-				res.send(dbResponse);
+			let dbResponse;
+			
+			try {
+				dbResponse = await sendQuery(queryString, [req.body.username, req.body.password]);
+			} catch (e) {
+				res.send(e);
 				return;
 			}
-			if ((dbResponse as Array<RowDataPacket>).length === 0) {
-				res.send(error("incorrectCredentials", "Credentials are incorrect", false));
-			}
+
+
+			res.send({exists: (dbResponse as Array<RowDataPacket>).length != 0});
+
 		})
 	}
 

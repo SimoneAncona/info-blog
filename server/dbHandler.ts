@@ -13,8 +13,9 @@ const connectionData: mysql.ConnectionOptions = {
 	database: process.env.MYSQL_DATABASE
 }
 
+let connection = mysql.createConnection(connectionData);
+
 export function sendQuery(queryString: string, values: Array<any> = []): Promise<Array<mysql.RowDataPacket> | ErrorObject> {
-	let connection = mysql.createConnection(connectionData);
 	let promise: Promise<Array<mysql.RowDataPacket>>;
 	promise = new Promise((resolve, rejects) => {
 		connection.query(
@@ -22,7 +23,9 @@ export function sendQuery(queryString: string, values: Array<any> = []): Promise
 			values,
 			(error, result) => {
 				if (error) {
-					let commonError = err.error("databaseQueryError", error.message);
+					let commonError = err.error("databaseQueryError", error.message, true, {
+						onQuery: queryString
+					});
 					rejects(commonError);
 				}
 				resolve(<Array<mysql.RowDataPacket>>result);

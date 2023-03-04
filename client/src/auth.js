@@ -12,27 +12,26 @@ async function sha256salty(password) {
 async function handleGoogleLogin(response) {
 	let res;
 	try {
-		res = await post("/auth/login/google", { credential: response.credential });
+		res = await post("/auth/login/google", { credential: response.credential }, handleGoogleAuthErrors);
 	} catch {
 		return;
 	}
+
 	window.location.replace("/");
 }
 
-async function handleGoogleSignin(response) {
-	let res;
-	try {
-		res = await post("/auth/login/google", { credential: response.credential });
-	} catch {
-		return;
+function handleGoogleAuthErrors(err) {
+	if (err.type === "registrationRequired") {
+		window.location.replace("/signin?email=" + err.other.email);
+	} else {
+		showError(err);
 	}
-	window.location.replace("/");
 }
 
 window.addEventListener("load", async () => {
 	let res;
 	try {
-		res = await post("/auth/login/google");
+		res = await post("/auth/login/google", (err) => {if (err.type != "registrationRequired") showError(err)});
 	} catch {
 		return;
 	}
