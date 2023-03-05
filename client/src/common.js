@@ -227,6 +227,30 @@ function checkCookie(name) {
 	return getCookie(name) != null;
 }
 
-function showUser() {
+async function showUser() {
+	if (document.getElementById("user-info") == null) {
+		let body = document.getElementsByTagName("body")[0];
+		body.innerHTML += `
+		<div id='user-info' class='column-container-start'>
+			<h2 class="smaller">Accesso eseguito come</h2>
+			<h1>${getCookie("username")}</h1>
+			<hr>
+			<div class="column-container-start" style="margin-top: 5px; border-top: 1px solid var(--gray); padding: 5px">
+				<a href="">Profilo</a>
+				<a>Esci</a>
+			</div>
+		</div>
+		`;
+		let ui = document.getElementById("user-info");
+		await fadeIn(ui);
+		window.addEventListener("click", hideUser)
+	}
+}
 
+function hideUser() {
+	let ui = document.getElementById("user-info");
+	if (ui != null) {
+		fadeOut(ui);
+		window.removeEventListener("click", hideUser);
+	}
 }

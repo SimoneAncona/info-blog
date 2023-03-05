@@ -10,7 +10,7 @@ import { error, isError } from "./commonErrorHandler";
 import { ErrorObject, ErrorType, User } from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as fs from "fs";
-import { checkBirth, checkUsername } from "./inputCheck";
+import { checkBirth, checkEmail, checkUsername } from "./inputCheck";
 import { setMedia } from "./mediaHandler";
 const cookieParser = require("cookie-parser");
 
@@ -32,6 +32,10 @@ export class ClientRequestsHandler {
 	}
 
 	private resolvePath(str: string): string {
+		return path.join(__dirname, str);
+	}
+
+	private resolvePage(str: string): string {
 		const p = path.join(__dirname, str);
 		if (fs.existsSync(p)) return p;
 		else return path.join(__dirname, "../client/pages/error404.html");
@@ -84,7 +88,7 @@ export class ClientRequestsHandler {
 		})
 
 		app.get("/:page/", (req, res) => {
-			res.sendFile(this.resolvePath((`../client/pages/${req.params.page}.html`)));
+			res.sendFile(this.resolvePage((`../client/pages/${req.params.page}.html`)));
 		});
 	}
 
@@ -146,7 +150,7 @@ export class ClientRequestsHandler {
 					res.sendFile(dbResponse);
 					return;
 				}
-				res.sendFile(this.resolvePath(dbResponse));
+				res.sendFile(dbResponse);
 			} catch(e) {
 				res.send(e);
 			}
@@ -216,7 +220,7 @@ export class ClientRequestsHandler {
 
 				if ((dbRes as Array<RowDataPacket>).length === 0) {
 					try {
-						await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`) VALUES (?, TRUE, ?)", [payload.email, req.cookies.googleSecret]);
+						await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`) VALUES (?, TRUE, ?)", [payload.email, googleSecret]);
 					} catch (e) {
 						res.send(e as ErrorObject);
 						return;
@@ -282,7 +286,7 @@ export class ClientRequestsHandler {
 				return;
 			}
 
-			let checkUser = checkUsername(req.body.username);
+			let checkUser = await checkUsername(req.body.username);
 			if (checkUser != null) {
 				res.send(checkUser);
 				return;
@@ -361,12 +365,68 @@ export class ClientRequestsHandler {
 			}
 		});
 
+		app.post("/auth/signin", async (req, res) => {
+			let checkUser = await checkUsername(req.body.username);
+			if (checkUser != null) {
+				res.send(checkUser);
+				return;
+			}
+
+			let checkBir = checkBirth(req.body.birth);
+			if (checkBir != null) {
+				res.send(checkBir);
+				return;
+			}
+
+			let checkMail = await checkEmail(req.body.email);
+			if (checkMail != null) {
+				res.send(checkMail);
+				return;
+			}
+
+			const u = {
+				username: req.body.username,
+				password: req.body.password,
+				email: req.body.email,
+				isGoogle: false,
+				birth: req.body.birth,
+				role: "rookie",
+				level: 0,
+				phone: req.body.phone,
+				twoStepAuth: false,
+				profilePicture: await setMedia(this.resolvePath("../media/default/default_icon_" + Math.round(Math.random() * 4 + 1) + ".png")) 
+			};
+
+			console.log(u);
+
+			let r = await auth.setUser(u as User);
+			if (isError(r)) {
+				res.send(r);
+				return;
+			}
+
+			const secret = auth.casualSecret();
+			const expires = auth.expiresSession();
+
+			try {
+				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (r as User).id]);
+			} catch (e) {
+				res.send(e as ErrorObject);
+				return;
+			}
+
+			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
+			res.cookie("username", (r as User).username, { expires: expires.toDate() });
+
+			res.send(r as User);
+		});
+
 		app.post("/auth/check-username", async (req, res) => {
 			const queryString = "SELECT * FROM `user` WHERE username = ?";
 			let dbResponse;
 
 			try {
-				dbResponse = await sendQuery(queryString, [req.body.username, req.body.password]);
+				dbResponse = await sendQuery(queryString, [req.body.username]);
 			} catch (e) {
 				res.send(e);
 				return;
@@ -375,7 +435,23 @@ export class ClientRequestsHandler {
 
 			res.send({ exists: (dbResponse as Array<RowDataPacket>).length != 0 });
 
-		})
+		});
+
+		app.post("/auth/check-email", async (req, res) => {
+			const queryString = "SELECT * FROM `user` WHERE email = ?";
+			let dbResponse;
+
+			try {
+				dbResponse = await sendQuery(queryString, [req.body.email]);
+			} catch (e) {
+				res.send(e);
+				return;
+			}
+
+
+			res.send({ exists: (dbResponse as Array<RowDataPacket>).length != 0 });
+
+		});
 	}
 
 	listen() {

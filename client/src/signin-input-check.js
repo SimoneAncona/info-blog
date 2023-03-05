@@ -2,12 +2,14 @@ let checkUser = false;
 let checkEmail = false;
 let checkBirth = false;
 let checkPasswd = false;
+let checkPasswdLength = false;
 
 window.addEventListener("load", () => {
 	let username = document.getElementById("username");
 	let email = document.getElementById("email");
 
 	if (username != null) {
+		username.value = "";
 		username.addEventListener("keyup", async () => {
 			checkUser = false;
 			if (username.value.includes(" ")) {
@@ -34,19 +36,31 @@ window.addEventListener("load", () => {
 	}
 
 	if (email != null) {
-		email.addEventListener("focusout", () => {
+		email.value = "";
+		email.addEventListener("focusout", async () => {
 			if (!validateEmail(email.value)) {
 				createWarning("email", "Formato email non valido", "right", "email-warning");
 				checkEmail = false;
-			} else {
-				removeWarning("email-warning");
-				checkEmail = true;
+				return
 			}
+
+			const res = await post("/auth/check-email", {
+				email: email.value
+			});
+			if (res.exists) {
+				createWarning("email", "Email già utilizzata", "right", "email-warning");
+				return;
+			}
+			
+			removeWarning("email-warning");
+			checkEmail = true;
+			
 		});
 	}
 
 	let birth = document.getElementById("birth-date");
 	if (birth != null) {
+		birth.value = "";
 		birth.addEventListener("focusout", () => {
 			let v = validateBirth(birth.value);
 			if (v == 1) {
@@ -95,6 +109,15 @@ window.addEventListener("load", () => {
 			}
 			removeWarning("passwd-warning");
 			checkPasswd = true;
+		});
+		passwd.addEventListener("keyup", () => {
+			if (passwd.value.length < 6) {
+				createWarning("password", "Almeno 6 caratteri", "left", "passwd-warning-6");
+				checkPasswdLength = false;
+				return;
+			}
+			removeWarning("passwd-warning-6");
+			checkPasswdLength = true;
 		})
 	}
 });
@@ -122,7 +145,7 @@ function checkInput(isGoogle = false) {
 		removeWarning("username-warning");
 	}
 
-	if (!checkBirth) {
+	if (!checkBirth || document.getElementById("birth-date").value == "") {
 		createWarning("birth-date", "Data di nascita non valida", "right", "birth-warning");
 		err = true;
 	} else {
@@ -143,13 +166,20 @@ function checkInput(isGoogle = false) {
 		} else {
 			removeWarning("passwd-warning");
 		}
+
+		if (!checkPasswdLength) {
+			createWarning("password", "Almeno 6 caratteri", "left", "passwd-warning-6");
+			err = true;
+		} else {
+			removeWarning("passwd-warning-6");
+		}
 	}
 
 	return !err;
 
 }
 
-function createWarning(elementId, msg, position, id) {
+async function createWarning(elementId, msg, position, id) {
 	let signin = document.querySelector("#warnings");
 	let warning = document.getElementById(id);
 	let translation = 220 - msg.length * 3.4;
@@ -166,7 +196,7 @@ function createWarning(elementId, msg, position, id) {
 		warning.style.setProperty("left", getCoords(element).left + "px");
 		warning.style.setProperty("top", getCoords(element).top + "px");
 		warning.style.setProperty("transform", (position === "left" ? `translateX(-${translation}%)` : `translateX(${translation}%)`) + " translateY(-30%)");
-		fadeIn(warning);
+		await fadeIn(warning);
 	} else {
 		warning.innerHTML = `
 		${position === "right" ? "<span class=\"material-symbols-outlined\">chevron_left</span>" : ""}

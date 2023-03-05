@@ -10,3 +10,23 @@ window.addEventListener("load", function () {
 		{ theme: "outline", size: "large" }  // customization attributes
 	);
 });
+
+async function signin() {
+	if (checkInput(false)) {
+		let res;
+		try {
+			res = await post("/auth/signin", 
+				{
+					username: username.value,
+					password: await sha256salty(password.value),
+					email: email.value,
+					birth: document.getElementById("birth-date").value,
+					phone: document.getElementById("phone").value
+				}
+			);
+			window.location.href = "/";
+		} catch {
+			return;
+		}
+	}
+}

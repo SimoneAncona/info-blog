@@ -27,11 +27,26 @@
 	"password": "sha256 with salt password"
 }
 ```
-- `/auth/signin/` signin
+- `/auth/signin/` signin. Rquire a JSON body
+```json
+{
+	"username": "string",
+	"password": "sha256withSalt",
+	"email": "string",
+	"birth": "YYYY-MM-DD",
+	"phone": "string"
+}
+```
 - `/auth/check-username` check if an username exist. Require json body
 ```json
 {
 	"username": "string"
+}
+```
+- `/auth/check-email` check if an email exist. Require json body
+```json
+{
+	"email": "string"
 }
 ```
 - `/auth/confirm/google` confirm google registration. Require json body

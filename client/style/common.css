@@ -284,6 +284,10 @@ a:hover::before {
 	align-content: flex-start !important;
 }
 
+a:visited {
+	color: inherit
+}
+
 .inline-container-start {
 	display: flex;
 	flex-direction: row;
@@ -337,6 +341,18 @@ a:hover::before {
 #footer-info {
 	column-gap: 25px;
 	margin-bottom: 30px;
+}
+
+#user-info {
+	position: fixed;
+	right: 20px;
+	top: var(--header-height);
+	background-color: var(--light);
+	padding: 10px;
+	border-radius: 5px;
+	color: var(--dark);
+	z-index: 5;
+	border: 1px solid var(--gray);
 }
 
 #error-banner {
