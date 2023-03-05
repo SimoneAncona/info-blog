@@ -117,6 +117,40 @@ export class ClientRequestsHandler {
 		app.get("/resources/images/:image", (req, res) => {
 			res.sendFile(this.resolvePath((`../client/assets/images/${req.params.image}`)));
 		});
+
+		// get profile picture
+		app.post("/resources/avatar", async (req, res) => {
+			let dbResponse;
+			let url;
+			try {
+				dbResponse = ((await sendQuery("SELECT * FROM `user` WHERE username = ?", [req.body.username]))as Array<RowDataPacket>)[0].profilePicture;
+				url = ((await sendQuery("SELECT * FROM `media` WHERE id = ?", [dbResponse]))as Array<RowDataPacket>)[0].path as string;
+				if (url.startsWith("http")) {
+					res.send({url: url});
+					return;
+				}
+				res.send({url: "/resources/media?id=" + dbResponse});
+				return;
+			} catch (e) {
+				res.send(e);
+				return;
+			}
+		});
+
+		app.get("/resources/media", async (req, res) => {
+			let dbResponse;
+			try {
+				dbResponse = ((await sendQuery("SELECT * FROM `media` WHERE id = ?", [req.query.id]))as Array<RowDataPacket>)[0].path as string;
+
+				if (dbResponse.startsWith("http")) {
+					res.sendFile(dbResponse);
+					return;
+				}
+				res.sendFile(this.resolvePath(dbResponse));
+			} catch(e) {
+				res.send(e);
+			}
+		})
 	}
 
 	// ---------------------- AUTHENTICATION ----------------------
@@ -174,7 +208,7 @@ export class ClientRequestsHandler {
 				// if it's not registered need to register
 				let dbRes;
 				try {
-					dbRes = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ? AND pendingSecret", [payload.email, req.cookies.googleSecret]);
+					dbRes = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ? AND pendingSecret", [payload.email, googleSecret]);
 				} catch (e) {
 					res.send(e);
 					return;
@@ -222,7 +256,7 @@ export class ClientRequestsHandler {
 			const expires = auth.expiresSession();
 
 			try {
-				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (user as User).username]);
+				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (user as User).id]);
 			} catch (e) {
 				res.send(e as ErrorObject);
 				return;
@@ -282,7 +316,25 @@ export class ClientRequestsHandler {
 				profilePicture: photo 
 			};
 			r = await auth.setUser(u as User);
-			res.send(r);
+			if (isError(r)) {
+				res.send(r);
+				return;
+			}
+
+			const secret = auth.casualSecret();
+			const expires = auth.expiresSession();
+
+			try {
+				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (r as User).id]);
+			} catch (e) {
+				res.send(e as ErrorObject);
+				return;
+			}
+
+			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
+			res.cookie("username", (r as User).username, { expires: expires.toDate() });
+
+			res.send(r as User);
 		})
 
 		app.post("/auth/client-id/google", (req, res) => {

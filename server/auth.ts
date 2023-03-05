@@ -29,7 +29,7 @@ export async function handleAutoLoginWithSessions(cookies: any): Promise<undefin
 	// check session secret
 	let session;
 	try {
-		session = await sendQuery("SELECT * FROM user, session WHERE user.username = session.user AND user.username = ? AND session.sessionSecret = ?", [cookies.username, cookies.sessionSecret]);
+		session = await sendQuery("SELECT * FROM user, session WHERE user.id = session.user AND user.username = ? AND session.sessionSecret = ?", [cookies.username, cookies.sessionSecret]);
 	} catch (e) {
 		return e as ErrorObject;
 	}
@@ -37,6 +37,7 @@ export async function handleAutoLoginWithSessions(cookies: any): Promise<undefin
 	if ((session as Array<RowDataPacket>).length === 0) return undefined;
 
 	return {
+		id: (session as Array<RowDataPacket>)[0].id,
 		username: (session as Array<RowDataPacket>)[0].username,
 		password: (session as Array<RowDataPacket>)[0].password,
 		email: (session as Array<RowDataPacket>)[0].email,
@@ -74,6 +75,7 @@ export async function getUser(email: string): Promise<User | ErrorObject | undef
 
 export async function setUser(user: User): Promise<ErrorObject | User> {
 	let dbResponse;
+	let newUser;
 	try {
 		dbResponse = await sendQuery("SELECT * FROM `user` WHERE email = ?", [user.email]);
 		if ((dbResponse as Array<RowDataPacket>).length !== 0) {
@@ -90,11 +92,12 @@ export async function setUser(user: User): Promise<ErrorObject | User> {
 			user.phone,
 			user.twoStepAuth,
 			user.profilePicture
-		])
+		]);
+		newUser = await sendQuery("SELECT * FROM `user` WHERE email = ?", [user.email]);
 	} catch (e) {
 		return e as ErrorObject;
 	}
-	return user;
+	return (newUser as Array<RowDataPacket>)[0] as User;
 }
 
 export { googleVerify };

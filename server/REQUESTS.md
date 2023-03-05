@@ -10,6 +10,8 @@
 - `/resources/images/:image` get image.image-extension
 
 ## POST
+- `/resources/avatar` get the profile picture. You must send `username` in json body
+- `/resources/media?id`
 - `/auth/login/google` with json body 
 ```json
 {
@@ -25,6 +27,7 @@
 	"password": "sha256 with salt password"
 }
 ```
+- `/auth/signin/` signin
 - `/auth/check-username` check if an username exist. Require json body
 ```json
 {

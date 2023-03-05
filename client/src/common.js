@@ -1,4 +1,4 @@
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
 	let mainLogo = document.getElementsByClassName("main-logo")[0];
 	mainLogo.addEventListener("click", () => {
 		window.location.href = "/";
@@ -6,7 +6,39 @@ window.addEventListener('load', () => {
 	let materialIcons = document.getElementsByClassName("material-symbols-outlined");
 	Array.from(materialIcons).forEach(icon => {
 		icon.setAttribute("translate", "no");
-	})
+	});
+	
+	let username = getCookie("username");
+	if (username != null) {
+		try {
+			let pictureCookie = getCookie("picture");
+			let pictureUrl;
+			if (pictureCookie == null) {
+				pictureUrl = await post("/resources/avatar", {username: getCookie("username")});
+				pictureUrl = pictureUrl.url;
+				setCookie("picture", pictureUrl);
+			} else {
+				pictureUrl = getCookie("picture");
+			}
+			let loginButton = document.getElementById("login-button");
+			if (loginButton != null)
+				loginButton.remove();
+			let nav = document.getElementsByTagName("nav")[0];
+			nav.innerHTML += `
+			<img id='avatar' src="${pictureUrl}" alt="${username} avatar" class="circle clickable" onclick="showUser()">
+			`
+		} catch {
+			return;
+		}
+	} else {
+		let avatar = document.getElementById("avatar");
+		if (avatar != null)
+			avatar.remove();
+		let nav = document.getElementsByTagName("nav")[0];
+		nav.innerHTML += `
+		<a href="/login" class="dark-color" id="login-button">Accedi</a>
+		`
+	}
 });
 
 
@@ -193,4 +225,8 @@ function getCookie(cname) {
 
 function checkCookie(name) {
 	return getCookie(name) != null;
+}
+
+function showUser() {
+
 }
