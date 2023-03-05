@@ -8,5 +8,15 @@ export function checkUsername(username: string): null | ErrorObject {
 }
 
 export function checkBirth(birth: string) {
+	if (isNaN(Date.parse(birth))) return error("clientInputFormatError", "Error birth date format");
 
+	if (Date.now() - Date.parse(birth) < 0) return error("clientInputFormatError", "Error birth date format");
+
+	if ((Date.now() - Date.parse(birth)) / 31556952000 < 16) {
+		return error("clientInputFormatError", "Error birth date format");
+	}
+
+	if ((Date.now() - Date.parse(birth)) / 31556952000 > 120) {
+		return error("clientInputFormatError", "Error birth date format");
+	}
 }

@@ -75,7 +75,11 @@ export async function getUser(email: string): Promise<User | ErrorObject | undef
 export async function setUser(user: User): Promise<ErrorObject | User> {
 	let dbResponse;
 	try {
-		dbResponse = await sendQuery("INSERT INTO `user`(`username`, `password`, `email`, `isGoogle`, `birth`, `role`, `level`, `phone`, `twoStepAuth`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+		dbResponse = await sendQuery("SELECT * FROM `user` WHERE email = ?", [user.email]);
+		if ((dbResponse as Array<RowDataPacket>).length !== 0) {
+			dbResponse = await sendQuery("DELETE FROM `user` WHERE email = ?", [user.email]);
+		}
+		dbResponse = await sendQuery("INSERT INTO `user`(`username`, `password`, `email`, `isGoogle`, `birth`, `role`, `level`, `phone`, `twoStepAuth`, `profilePicture`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
 			user.username,
 			user.password,
 			user.email,
@@ -84,7 +88,8 @@ export async function setUser(user: User): Promise<ErrorObject | User> {
 			user.role,
 			user.level,
 			user.phone,
-			user.twoStepAuth
+			user.twoStepAuth,
+			user.profilePicture
 		])
 	} catch (e) {
 		return e as ErrorObject;

@@ -7,12 +7,12 @@ window.addEventListener("load", () => {
 			createWarning("username", "Il nome non può contenere spazi", "left", "username-warning");
 			return;
 		}
-		
+
 		if (!/^[\w.-]+$/.test(username.value)) {
 			createWarning("username", "Il nome non può contenere " + username.value.match(/[^\w.-]+/)[0].replace("", " "), "left", "username-warning");
 			return;
 		}
-			
+
 		const res = await post("/auth/check-username", {
 			username: username.value
 		});
@@ -24,3 +24,23 @@ window.addEventListener("load", () => {
 		removeWarning("username-warning");
 	});
 });
+
+async function signin() {
+	if (checkInput(true)) {
+		let params = new URLSearchParams(window.location.search);
+		let res;
+		try {
+			res = await post("/auth/confirm/google", {
+				email: params.get("email"),
+				username: document.getElementById("username").value,
+				birth: document.getElementById("birth-date").value,
+				phone: document.getElementById("phone").value
+			}
+			);
+		} catch {
+			return;
+		}
+
+		window.location.href = "/";
+	}
+}

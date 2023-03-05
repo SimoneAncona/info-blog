@@ -10,6 +10,7 @@ export type User = {
 	level: number
 	phone: string
 	twoStepAuth: boolean
+	profilePicture: number
 }
 
 export type ErrorType = 

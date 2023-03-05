@@ -15,8 +15,8 @@ const connectionData: mysql.ConnectionOptions = {
 
 let connection = mysql.createConnection(connectionData);
 
-export function sendQuery(queryString: string, values: Array<any> = []): Promise<Array<mysql.RowDataPacket> | ErrorObject> {
-	let promise: Promise<Array<mysql.RowDataPacket>>;
+export function sendQuery(queryString: string, values: Array<any> = []): Promise<Array<mysql.RowDataPacket> | mysql.OkPacket | ErrorObject> {
+	let promise: Promise<Array<mysql.RowDataPacket> | mysql.OkPacket | ErrorObject>;
 	promise = new Promise((resolve, rejects) => {
 		connection.query(
 			queryString,
@@ -28,7 +28,10 @@ export function sendQuery(queryString: string, values: Array<any> = []): Promise
 					});
 					rejects(commonError);
 				}
-				resolve(<Array<mysql.RowDataPacket>>result);
+				if (typeof result === "object" && "insertId" in result) {
+					resolve(result as mysql.OkPacket);
+				}
+				resolve(result as Array<mysql.RowDataPacket>);
 			}
 		);
 	});

@@ -12,6 +12,7 @@ CREATE TABLE `media` (
 	PRIMARY KEY(`id`)
 );
 CREATE TABLE `user` (
+	`id` INT AUTO_INCREMENT,
 	`username` VARCHAR(255),
 	`password` CHAR(64), -- use sha256 for password encryption
 	`email` VARCHAR(255) NOT NULL,
@@ -22,7 +23,7 @@ CREATE TABLE `user` (
 	`phone` VARCHAR(255),
 	`twoStepAuth` BOOLEAN DEFAULT FALSE,
 	`profilePicture` INT NOT NULL,
-	PRIMARY KEY(`username`),
+	PRIMARY KEY(`id`),
 	FOREIGN KEY(`role`) REFERENCES `role`(`name`),
 	FOREIGN KEY(`profilePicture`) REFERENCES `media`(`id`)
 );
@@ -30,10 +31,10 @@ CREATE TABLE `article` (
 	`id` INT AUTO_INCREMENT,
 	`title` VARCHAR(255) NOT NULL,
 	`subtitle` VARCHAR(255) NOT NULL,
-	`user` VARCHAR(255) NOT NULL,
+	`user` INT NOT NULL,
 	`path` VARCHAR(255) NOT NULL,
 	PRIMARY KEY(`id`),
-	FOREIGN KEY(`user`) REFERENCES `user`(username)
+	FOREIGN KEY(`user`) REFERENCES `user`(`id`)
 );
 CREATE TABLE `permission` (
 	`name` VARCHAR(255),
@@ -50,9 +51,9 @@ CREATE TABLE `rolePermission` (
 CREATE TABLE `session` (
 	`id` INT AUTO_INCREMENT,
 	`sessionSecret` CHAR(64) NOT NULL,
-	`user` VARCHAR(255) NOT NULL,
+	`user` INT NOT NULL,
 	PRIMARY KEY(`id`),
-	FOREIGN KEY(`user`) REFERENCES `user`(`username`)
+	FOREIGN KEY(`user`) REFERENCES `user`(`id`)
 );
 
 CREATE TABLE `pendingRegistration` (
@@ -60,6 +61,5 @@ CREATE TABLE `pendingRegistration` (
 	`email` VARCHAR(255) NOT NULL,
 	`isGoogle` BOOLEAN NOT NULL,
 	`pendingSecret` CHAR(64) NOT NULL,
-	`credential` VARCHAR(255) NOT NULL,
 	PRIMARY KEY(`id`)
 );

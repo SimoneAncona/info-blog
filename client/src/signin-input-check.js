@@ -113,6 +113,42 @@ function validateBirth(birth) {
 	}
 }
 
+function checkInput(isGoogle = false) {
+	let err = false;
+	if (!checkUser) {
+		createWarning("username", "Nome utente non valido", "left", "username-warning");
+		err = true;
+	} else {
+		removeWarning("username-warning");
+	}
+
+	if (!checkBirth) {
+		createWarning("birth-date", "Data di nascita non valida", "right", "birth-warning");
+		err = true;
+	} else {
+		removeWarning("birth-warning");
+	}
+
+	if (!isGoogle) {
+		if (!checkEmail) {
+			createWarning("email", "Formato email non valido", "right", "email-warning");
+			err = true;
+		} else {
+			removeWarning("email-warning");
+		}
+		
+		if (!checkPasswd) {
+			createWarning("confirm-password", "Le password non coincidono", "left", "passwd-warning");
+			err = true;
+		} else {
+			removeWarning("passwd-warning");
+		}
+	}
+
+	return !err;
+
+}
+
 function createWarning(elementId, msg, position, id) {
 	let signin = document.querySelector("#warnings");
 	let warning = document.getElementById(id);

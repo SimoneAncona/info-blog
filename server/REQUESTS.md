@@ -30,3 +30,13 @@
 {
 	"username": "string"
 }
+```
+- `/auth/confirm/google` confirm google registration. Require json body
+```json
+{
+	"email": "string",
+	"username": "string",
+	"birth": "YYYY-MM-DD",
+	"phone": "string"
+}
+```

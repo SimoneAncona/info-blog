@@ -11,6 +11,7 @@ import { ErrorObject, ErrorType, User } from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as fs from "fs";
 import { checkBirth, checkUsername } from "./inputCheck";
+import { setMedia } from "./mediaHandler";
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -146,7 +147,8 @@ export class ClientRequestsHandler {
 			if (
 				payload === undefined ||
 				payload.email === undefined ||
-				payload.name === undefined
+				payload.name === undefined ||
+				payload.picture === undefined
 			) {
 				res.send(error("authentication", "An error occurred while authenticating with google"));
 				return;
@@ -168,33 +170,50 @@ export class ClientRequestsHandler {
 			}
 
 			// check if it is registered
-			if (user === undefined) {
+			if (user === undefined || (user as User).username === "") {
 				// if it's not registered need to register
-				let r;
+				let dbRes;
 				try {
-					r = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ?", [payload.email]);
+					dbRes = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ? AND pendingSecret", [payload.email, req.cookies.googleSecret]);
 				} catch (e) {
-					res.send(e as ErrorObject);
+					res.send(e);
 					return;
 				}
 
-				if ((<Array<RowDataPacket>>r).length != 0) {
-					for (let row of (<Array<RowDataPacket>>r)) {
-						if (row.email === payload.email && row.pendingSecret === req.cookies.googleSecret) {
-							res.send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
-							return;
-						}
+				if ((dbRes as Array<RowDataPacket>).length === 0) {
+					try {
+						await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`) VALUES (?, TRUE, ?)", [payload.email, req.cookies.googleSecret]);
+					} catch (e) {
+						res.send(e as ErrorObject);
+						return;
 					}
-					res.send(error("authentication", "Cannot confirm the email", false, { email: payload.email }));
-					return;
 				}
 
-				try {
-					await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`, `credential`) VALUES (?, TRUE, ?, ?)", [payload.email, req.cookies.googleSecret, req.body.credential]);
-				} catch (e) {
-					res.send(e as ErrorObject);
-					return;
+				if (user === undefined) {
+					let photo = await setMedia(payload.picture);
+					if (isError(photo)) {
+						res.send(photo);
+						return;
+					}
+					const u = {
+						username: "",
+						password: "",
+						email: payload.email,
+						isGoogle: true,
+						birth: "",
+						role: "rookie",
+						level: 0,
+						phone: "",
+						twoStepAuth: false,
+						profilePicture: photo
+					};
+					let r = await auth.setUser(u as User);
+					if (isError(r)) {
+						res.send(r);
+						return;
+					}
 				}
+
 				res.send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
 				return;
 			}
@@ -240,22 +259,30 @@ export class ClientRequestsHandler {
 				res.send(checkBir);
 				return;
 			}
+			let r;
 
+			let photo
 			try {
-				auth.setUser({
-					username: req.body.username,
-					password: "",
-					email: req.body.email,
-					isGoogle: true,
-					birth: req.body.birth,
-					role: "rookie",
-					level: 0,
-					phone: req.body.phone,
-					twoStepAuth: false
-				});
+				photo = ((await sendQuery("SELECT * FROM `user` WHERE email = ?", [req.body.email]))as Array<RowDataPacket>)[0].profilePicture;
 			} catch (e) {
 				res.send(e);
+				return;
 			}
+
+			const u = {
+				username: req.body.username,
+				password: "",
+				email: req.body.email,
+				isGoogle: true,
+				birth: req.body.birth,
+				role: "rookie",
+				level: 0,
+				phone: req.body.phone,
+				twoStepAuth: false,
+				profilePicture: photo 
+			};
+			r = await auth.setUser(u as User);
+			res.send(r);
 		})
 
 		app.post("/auth/client-id/google", (req, res) => {
