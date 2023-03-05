@@ -208,6 +208,10 @@ function setCookie(name, value, expiredays) {
 	document.cookie = name + "=" + value + ";" + expires + ";path=/";
 }
 
+function removeCookie(name) {
+	setCookie(name, "", 0);
+}
+
 function getCookie(cname) {
 	let name = cname + "=";
 	let ca = document.cookie.split(';');
@@ -233,17 +237,17 @@ async function showUser() {
 		body.innerHTML += `
 		<div id='user-info' class='column-container-start'>
 			<h2 class="smaller">Accesso eseguito come</h2>
-			<h1>${getCookie("username")}</h1>
+			<h1 class="normal">${getCookie("username")}</h1>
 			<hr>
 			<div class="column-container-start" style="margin-top: 5px; border-top: 1px solid var(--gray); padding: 5px">
 				<a href="">Profilo</a>
-				<a>Esci</a>
+				<a class="clickable" onclick="logout()">Esci</a>
 			</div>
 		</div>
 		`;
 		let ui = document.getElementById("user-info");
 		await fadeIn(ui);
-		window.addEventListener("click", hideUser)
+		window.addEventListener("click", hideUser);
 	}
 }
 
@@ -253,4 +257,12 @@ function hideUser() {
 		fadeOut(ui);
 		window.removeEventListener("click", hideUser);
 	}
+}
+
+function logout() {
+	removeCookie("googleSecret");
+	removeCookie("sessionSecret");
+	removeCookie("username");
+	removeCookie("picture");
+	window.location.reload();
 }

@@ -44,6 +44,7 @@
 - `title`
 - `bigger` 
 - `smaller`
+- `normal`
 
 ## Input
 - `button` button input
