@@ -202,7 +202,7 @@ p {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	border-radius: 8px;
+	border-radius: 4px;
 	padding: 20px;
 	transition: all 0.4s ease;
 }
@@ -376,6 +376,22 @@ a:visited {
 	column-gap: 5px;
 }
 
+#cookie-banner {
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 80%;
+	margin: 10px;
+	bottom: 0;
+	transition: all 0.4s ease;
+	border-radius: 5px;
+	box-shadow: 0 0 4px 3px var(--gray-50);
+	z-index: 3;
+	color: var(--light);
+	padding: 10px;
+	opacity: 0;
+}
+
 @media (prefers-color-scheme: dark) {
 	:root {
 		--light: rgb(35, 39, 47);
@@ -420,5 +436,13 @@ a:visited {
 
 	nav {
 		justify-content: space-between;
+	}
+
+	#cookie-banner {
+		top: 50%;
+		left: 50%;
+		transform: translateY(-50%) translateX(-50%);
+		height: max-content;
+		padding: 20px;
 	}
 }

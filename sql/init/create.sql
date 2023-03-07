@@ -30,7 +30,8 @@ CREATE TABLE `user` (
 CREATE TABLE `article` (
 	`id` INT AUTO_INCREMENT,
 	`title` VARCHAR(255) NOT NULL,
-	`subtitle` VARCHAR(255) NOT NULL,
+	`subTitle` VARCHAR(255) NOT NULL,
+	`date` DATE NOT NULL,
 	`user` INT NOT NULL,
 	`path` VARCHAR(255) NOT NULL,
 	PRIMARY KEY(`id`),

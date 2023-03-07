@@ -8,10 +8,13 @@
 - `/resources/js/` get the common.js
 - `/resources/js/:file` get file.js
 - `/resources/images/:image` get image.image-extension
+- `/news/article?id` get article
 
 ## POST
 - `/resources/avatar` get the profile picture. You must send `username` in json body
-- `/resources/media?id`
+- `/resources/media?id` get media
+- `/news/cover?id` get the cover of a news
+- `/news/latest` get the cover of 10 latest news.
 - `/auth/login/google` with json body 
 ```json
 {
