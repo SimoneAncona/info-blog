@@ -29,6 +29,7 @@
 ## Page Elements
 - `circle`: a circle
 - `main-logo`: the logo of the page
+- `smaller-circle`: a smaller circle
 
 ## Internal position
 - `center`: align items center

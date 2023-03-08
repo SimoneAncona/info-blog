@@ -6,9 +6,9 @@ clientRequestsHandler = new ClientRequestsHandler();
 clientRequestsHandler.listen();
 forward(process.env.PORT, 80);
 
-a();
+// a();
 
-async function a() {
+// async function a() {
 
-    console.log(await ask("how to print in c"))
-}
+//     console.log(await ask("how to print in c"))
+// }

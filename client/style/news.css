@@ -1,0 +1,11 @@
+.news-cover {
+	margin: 10px;
+	width: 25%;
+	height: min-content;
+	aspect-ratio: 1/1;
+}
+
+#categories {
+	column-gap: 15px;
+	height: 10vh;
+}

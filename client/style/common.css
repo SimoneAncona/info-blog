@@ -207,6 +207,16 @@ p {
 	transition: all 0.4s ease;
 }
 
+.smaller-circle {
+	border-radius: 100%;
+	aspect-ratio: 1/1;
+	height: 25px;
+	margin: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 p {
 	margin: 10px;
 	margin-inline: 15px;

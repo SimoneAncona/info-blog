@@ -15,7 +15,6 @@ window.addEventListener('load', async () => {
 			let pictureUrl;
 			if (pictureCookie == null) {
 				pictureUrl = await post("/resources/avatar", {username: getCookie("username")});
-				pictureUrl = pictureUrl.url;
 				setCookie("picture", pictureUrl);
 			} else {
 				pictureUrl = getCookie("picture");

@@ -1,6 +1,6 @@
 async function getMedia(mediaId) {
 	try {
-		return get("/media/" + mediaId);
+		return await get("/resources/media?id=" + mediaId);
 	} catch {
 		return null;
 	}

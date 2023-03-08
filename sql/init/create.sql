@@ -27,6 +27,19 @@ CREATE TABLE `user` (
 	FOREIGN KEY(`role`) REFERENCES `role`(`name`),
 	FOREIGN KEY(`profilePicture`) REFERENCES `media`(`id`)
 );
+
+CREATE TABLE `category` (
+	`name` VARCHAR(255),
+	PRIMARY KEY(`name`)
+);
+
+CREATE TABLE `articleCategory` (
+	`article` INT,
+	`category` VARCHAR(255),
+	PRIMARY KEY(`article`, `category`),
+	FOREIGN KEY(`article`) REFERENCES `article`(`id`),
+	FOREIGN KEY(`category`) REFERENCES `category`(`name`)
+);
 CREATE TABLE `article` (
 	`id` INT AUTO_INCREMENT,
 	`title` VARCHAR(255) NOT NULL,

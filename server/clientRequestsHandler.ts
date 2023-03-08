@@ -12,6 +12,7 @@ import { RowDataPacket } from "mysql2";
 import * as fs from "fs";
 import { checkBirth, checkEmail, checkUsername } from "./inputCheck";
 import { setMedia } from "./mediaHandler";
+import { getLatestNews } from "./articleResponseHandler";
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -26,9 +27,11 @@ export class ClientRequestsHandler {
 		dotenv.config();
 		this.port = process.env.PORT || 3000;
 
-		this.pageRequest();
-		this.resourcesRequest();
-		this.authRequest();
+		this.pageRequests();
+		this.resourcesRequests();
+		this.authRequests();
+
+		this.newsRequests();
 	}
 
 	private resolvePath(str: string): string {
@@ -42,7 +45,7 @@ export class ClientRequestsHandler {
 	}
 
 	// ---------------------- PAGES ----------------------
-	private pageRequest() {
+	private pageRequests() {
 		app.get("/", (req, res) => {
 			res.sendFile(this.resolvePath("../client/pages/index.html"));
 		});
@@ -93,7 +96,7 @@ export class ClientRequestsHandler {
 	}
 
 	// ---------------------- CLIENT RESOURCES ----------------------
-	private resourcesRequest() {
+	private resourcesRequests() {
 		// get common css
 		app.get("/resources/css/", (req, res) => {
 			res.sendFile(this.resolvePath(("../client/style/common.css")));
@@ -130,10 +133,10 @@ export class ClientRequestsHandler {
 				dbResponse = ((await sendQuery("SELECT * FROM `user` WHERE username = ?", [req.body.username]))as Array<RowDataPacket>)[0].profilePicture;
 				url = ((await sendQuery("SELECT * FROM `media` WHERE id = ?", [dbResponse]))as Array<RowDataPacket>)[0].path as string;
 				if (url.startsWith("http")) {
-					res.send({url: url});
+					res.send(url);
 					return;
 				}
-				res.send({url: "/resources/media?id=" + dbResponse});
+				res.send("/resources/media?id=" + dbResponse);
 				return;
 			} catch (e) {
 				res.send(e);
@@ -158,7 +161,7 @@ export class ClientRequestsHandler {
 	}
 
 	// ---------------------- AUTHENTICATION ----------------------
-	private authRequest() {
+	private authRequests() {
 		// login with google
 		app.post("/auth/login/google", async (req, res) => {
 			const session = await auth.handleAutoLoginWithSessions(req.cookies);
@@ -451,6 +454,19 @@ export class ClientRequestsHandler {
 
 			res.send({ exists: (dbResponse as Array<RowDataPacket>).length != 0 });
 
+		});
+	}
+
+	// ------ NEWS / ARTICLES ------
+	private newsRequests() {
+		app.post("/news/latest", async (req, res) => {
+			let news = await getLatestNews(12);
+			if (isError(news)) {
+				res.send(news);
+				return;
+			}
+
+			res.send(news);
 		});
 	}
 

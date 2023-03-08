@@ -51,4 +51,5 @@ export type NewsCover = {
 	subTitle: string,
 	date: string,
 	user: string,
+	userPicture: number,
 }

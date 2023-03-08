@@ -14,7 +14,7 @@
 - `/resources/avatar` get the profile picture. You must send `username` in json body
 - `/resources/media?id` get media
 - `/news/cover?id` get the cover of a news
-- `/news/latest` get the cover of 10 latest news.
+- `/news/latest` get the cover of 12 latest news.
 - `/auth/login/google` with json body 
 ```json
 {
