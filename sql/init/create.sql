@@ -1,4 +1,4 @@
--- Active: 1677797151222@@127.0.0.1@3306@infoworld
+-- Active: 1675672694253@@127.0.0.1@3306@infoworld
 CREATE DATABASE infoWorld;
 USE infoWorld;
 CREATE TABLE `role` (

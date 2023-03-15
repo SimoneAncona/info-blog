@@ -20,12 +20,12 @@ async function buildNewsCover(cover) {
 	console.log(cover);
 	return `
 	<div class="card news-cover bkg-dark-color light-color">
-		<h1>${cover.title}</h1>
+		<h1 class="title">${cover.title}</h1>
 		<br>
 		<h2 class="smaller">${cover.subTitle}</h2>
 		<div class="inline-container"> 
 			<p>By ${cover.user}</p>
-			<img src="${await post("/resources/avatar", {username: cover.user})}" class="smaller-circle">
+			<img src="${await post("/resources/avatar", {username: cover.user})}" class="smaller-circle" referrerpolicy="no-referrer">
 		</div>
 	</div>
 	`
