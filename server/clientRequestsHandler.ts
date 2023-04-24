@@ -97,7 +97,15 @@ export class ClientRequestsHandler {
 				return;
 			}
 			res.send(this.resolvePath("../client/pages/admin.html"));
-		})
+		});
+
+		app.get("/profile/", async (req, res) => {
+			let user = await auth.handleAutoLoginWithSessions(req.cookies);
+			if (user === undefined || isError(user)) {
+				res.redirect("/login");
+			}
+			res.sendFile(this.resolvePath("../client/pages/profile.html"));
+		});
 
 		app.get("/:page/", (req, res) => {
 			res.sendFile(this.resolvePage((`../client/pages/${req.params.page}.html`)));
@@ -477,7 +485,7 @@ export class ClientRequestsHandler {
 		});
 
 		app.get("/news/:id", (req, res) => {
-
+			res.sendFile(this.resolvePath("../client/pages/article.html"));
 		});
 
 		app.get("/news/content/:id", async (req, res) => {

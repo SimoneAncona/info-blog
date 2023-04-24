@@ -239,7 +239,7 @@ async function showUser() {
 			<h1 class="normal">${getCookie("username")}</h1>
 			<hr>
 			<div class="column-container-start" style="margin-top: 5px; border-top: 1px solid var(--gray); padding: 5px">
-				<a href="">Profilo</a>
+				<a href="/profile">Profilo</a>
 				<a class="clickable" onclick="logout()">Esci</a>
 			</div>
 		</div>

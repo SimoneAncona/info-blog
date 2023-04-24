@@ -19,7 +19,7 @@ window.addEventListener("load", async () => {
 async function buildNewsCover(cover) {
 	console.log(cover);
 	return `
-	<div class="card news-cover bkg-dark-color light-color">
+	<div class="card news-cover bkg-dark-color light-color" onclick="window.location.href = '/news/${cover.id}'">
 		<h1 class="title">${cover.title}</h1>
 		<br>
 		<h2 class="smaller">${cover.subTitle}</h2>
