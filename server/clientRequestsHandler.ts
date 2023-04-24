@@ -276,18 +276,7 @@ export class ClientRequestsHandler {
 				return;
 			}
 
-			const secret = auth.casualSecret();
-			const expires = auth.expiresSession();
-
-			try {
-				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (user as User).id]);
-			} catch (e) {
-				res.status(500).send(e as ErrorObject);
-				return;
-			}
-
-			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
-			res.cookie("username", (user as User).username, { expires: expires.toDate() });
+			if(!await auth.setupSession(res, user as User)) return;
 
 			res.send(user as User);
 		});
@@ -345,18 +334,7 @@ export class ClientRequestsHandler {
 				return;
 			}
 
-			const secret = auth.casualSecret();
-			const expires = auth.expiresSession();
-
-			try {
-				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (r as User).id]);
-			} catch (e) {
-				res.status(500).send(e as ErrorObject);
-				return;
-			}
-
-			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
-			res.cookie("username", (r as User).username, { expires: expires.toDate() });
+			if(!await auth.setupSession(res, r as User)) return;
 
 			auth.removePendingRegistration((r as User).email);
 
@@ -399,18 +377,7 @@ export class ClientRequestsHandler {
 				profilePicture: (dbResponse as Array<RowDataPacket>)[0].profilePicture,
 			} as User;
 
-			const secret = auth.casualSecret();
-			const expires = auth.expiresSession();
-
-			try {
-				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (u as User).id]);
-			} catch (e) {
-				res.status(500).send(e as ErrorObject);
-				return;
-			}
-
-			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
-			res.cookie("username", (u as User).username, { expires: expires.toDate() });
+			if(!await auth.setupSession(res, u as User)) return;
 
 			res.send(u);
 		});
@@ -453,18 +420,7 @@ export class ClientRequestsHandler {
 				return;
 			}
 
-			const secret = auth.casualSecret();
-			const expires = auth.expiresSession();
-
-			try {
-				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (r as User).id]);
-			} catch (e) {
-				res.status(500).send(e as ErrorObject);
-				return;
-			}
-
-			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
-			res.cookie("username", (r as User).username, { expires: expires.toDate() });
+			if(!await auth.setupSession(res, r as User)) return;
 
 			res.send(r as User);
 		});
@@ -479,7 +435,6 @@ export class ClientRequestsHandler {
 				res.status(500).send(e);
 				return;
 			}
-
 
 			res.send({ exists: (dbResponse as Array<RowDataPacket>).length != 0 });
 

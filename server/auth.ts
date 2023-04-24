@@ -60,7 +60,7 @@ export function casualSecret(): string {
 }
 
 export function expiresSession(): moment.Moment {
-	return moment().add(3, "month");
+	return moment().add(2, "month");
 }
 
 export async function getUser(email: string): Promise<User | ErrorObject | undefined> {
@@ -143,6 +143,23 @@ export class AuthGuard {
 			return null;
 		}
 	}
+}
+
+export async function setupSession(res: Response, user: User) {
+	const secret = casualSecret();
+			const expires = expiresSession();
+
+			try {
+				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, user.id]);
+			} catch (e) {
+				res.status(500).send(e as ErrorObject);
+				return false;
+			}
+
+			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
+			res.cookie("username", user.username, { expires: expires.toDate() });
+
+			return true;
 }
 
 export { googleVerify };
