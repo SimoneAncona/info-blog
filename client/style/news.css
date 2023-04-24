@@ -1,8 +1,8 @@
 .news-cover {
 	margin: 10px;
 	width: 25%;
-	height: min-content;
-	aspect-ratio: 3/2;
+	height: 300px;
+	overflow: hidden;
 }
 
 .news-cover:hover {

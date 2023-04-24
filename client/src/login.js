@@ -24,4 +24,6 @@ async function login() {
 			setTimeout(() => fadeOut(document.querySelector("#incorrect-credentials")), 2500);
 		}
 	});
+
+	if (!isAnError(response)) window.location.href = "/";
 }

@@ -100,6 +100,10 @@ export async function setUser(user: User): Promise<ErrorObject | User> {
 	return (newUser as Array<RowDataPacket>)[0] as User;
 }
 
+export async function removePendingRegistration(email: string) {
+	await sendQuery("DELETE FROM `pendingRegistration` WHERE email = ?", [email]);
+}
+
 export class AuthGuard {
 
 	res: Response;

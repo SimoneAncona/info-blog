@@ -96,7 +96,7 @@ export class ClientRequestsHandler {
 				res.status(403).sendFile(this.resolvePath("../client/pages/error403.html"));
 				return;
 			}
-			res.send(this.resolvePath("../client/pages/admin.html"));
+			res.sendFile(this.resolvePath("../client/pages/admin.html"));
 		});
 
 		app.get("/profile/", async (req, res) => {
@@ -358,6 +358,8 @@ export class ClientRequestsHandler {
 			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
 			res.cookie("username", (r as User).username, { expires: expires.toDate() });
 
+			auth.removePendingRegistration((r as User).email);
+
 			res.send(r as User);
 		})
 
@@ -382,7 +384,35 @@ export class ClientRequestsHandler {
 
 			if ((dbResponse as Array<RowDataPacket>).length === 0) {
 				res.status(401).send(error("incorrectCredentials", "Credentials are incorrect", false));
+				return;
 			}
+
+			let u = {
+				id: (dbResponse as Array<RowDataPacket>)[0].id,
+				username: (dbResponse as Array<RowDataPacket>)[0].username,
+				password: (dbResponse as Array<RowDataPacket>)[0].password,
+				email: (dbResponse as Array<RowDataPacket>)[0].email,
+				isGoogle: (dbResponse as Array<RowDataPacket>)[0].isGoogle,
+				birth: (dbResponse as Array<RowDataPacket>)[0].birth,
+				role: (dbResponse as Array<RowDataPacket>)[0].role,
+				twoStepAuth: (dbResponse as Array<RowDataPacket>)[0].twoStepAuth,
+				profilePicture: (dbResponse as Array<RowDataPacket>)[0].profilePicture,
+			} as User;
+
+			const secret = auth.casualSecret();
+			const expires = auth.expiresSession();
+
+			try {
+				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (u as User).id]);
+			} catch (e) {
+				res.status(500).send(e as ErrorObject);
+				return;
+			}
+
+			res.cookie("sessionSecret", secret, { expires: expires.toDate() });
+			res.cookie("username", (u as User).username, { expires: expires.toDate() });
+
+			res.send(u);
 		});
 
 		app.post("/auth/signin", async (req, res) => {
