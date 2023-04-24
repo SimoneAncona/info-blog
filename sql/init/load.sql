@@ -1,5 +1,5 @@
 -- Active: 1677797151222@@127.0.0.1@3306@infoworld
-USE info_world;
+USE infoWorld;
 INSERT INTO `role`(`name`)
 VALUES 
 	("admin"),

@@ -2,10 +2,10 @@ import { OAuth2Client, TokenPayload } from "google-auth-library";
 import { sendQuery } from "./dbHandler";
 import * as dotenv from "dotenv";
 import { error, isError } from "./commonErrorHandler";
-import { ErrorObject, User } from "./interfaces";
+import { ErrorObject, Permission, User } from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as moment from "moment";
-import { CookieOptions } from "express";
+import { CookieOptions, Request, Response } from "express";
 
 dotenv.config();
 
@@ -98,6 +98,47 @@ export async function setUser(user: User): Promise<ErrorObject | User> {
 		return e as ErrorObject;
 	}
 	return (newUser as Array<RowDataPacket>)[0] as User;
+}
+
+export class AuthGuard {
+
+	res: Response;
+	req: Request;
+
+	constructor(req: Request, res: Response) {
+		this.res = res;
+		this.req = req;
+	}
+
+	async checkPermissions(permissions: Permission[]) {
+		let user = await handleAutoLoginWithSessions(this.req.cookies);
+		if (user === undefined || isError(user)) return false;
+		let userPermissions = await this._getUserPermissions(
+			(user as User).username
+		);
+		if (userPermissions === null) return false;
+		for (let permission of permissions) {
+			if (!userPermissions.includes(permission)) return false;
+		}
+		return true;
+	}
+
+	async isAdmin() {
+		let user = await handleAutoLoginWithSessions(this.req.cookies);
+		if (user === undefined || isError(user)) return false;
+
+		return (user as User).role === "admin";
+	}
+
+	async _getUserPermissions(username: string) {
+		try {
+			let permissions = await sendQuery("SELECT permission FROM rolepermission WHERE role = (SELECT role FROM `user` WHERE `username` = ?)", [username]) as unknown as Permission[];
+			return permissions;
+		} catch (e) {
+			this.res.status(500).send();
+			return null;
+		}
+	}
 }
 
 export { googleVerify };

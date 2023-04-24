@@ -6,7 +6,6 @@
 		"preserveConstEnums": true,
 		"sourceMap": false,
 		"strict": true,
-		"watch": true,
 		"types": ["node"],
 	},
 	"include": ["*", "server/**/*"],

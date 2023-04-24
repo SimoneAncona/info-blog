@@ -88,6 +88,13 @@ export class ClientRequestsHandler {
 				return;
 			}
 			res.sendFile(this.resolvePath("../client/pages/google-signin.html"));
+		});
+
+		app.get("/admin/", async (req, res) => {
+			const guard = new auth.AuthGuard(req, res);
+			if (!(await guard.isAdmin())) {
+				res.status(403).sendFile("../client/pages/")
+			}
 		})
 
 		app.get("/:page/", (req, res) => {
@@ -139,7 +146,7 @@ export class ClientRequestsHandler {
 				res.send("/resources/media?id=" + dbResponse);
 				return;
 			} catch (e) {
-				res.send(e);
+				res.status(500).send(e);
 				return;
 			}
 		});
@@ -155,7 +162,7 @@ export class ClientRequestsHandler {
 				}
 				res.sendFile(dbResponse);
 			} catch(e) {
-				res.send(e);
+				res.status(500).send(e);
 			}
 		})
 	}
@@ -181,7 +188,7 @@ export class ClientRequestsHandler {
 			try {
 				payload = await auth.googleVerify(req.body.credential);
 			} catch {
-				res.send(error("authentication", "An error occurred while logging in with google"));
+				res.status(500).send(error("authentication", "An error occurred while logging in with google"));
 				return;
 			}
 
@@ -191,14 +198,14 @@ export class ClientRequestsHandler {
 				payload.name === undefined ||
 				payload.picture === undefined
 			) {
-				res.send(error("authentication", "An error occurred while authenticating with google"));
+				res.status(500).send(error("authentication", "An error occurred while authenticating with google"));
 				return;
 			}
 
 			// check if exists in database
 			const user = await auth.getUser(payload.email);
 			if (isError(user)) {
-				res.send(user as ErrorObject);
+				res.status(500).send(user as ErrorObject);
 				return;
 			}
 
@@ -217,7 +224,7 @@ export class ClientRequestsHandler {
 				try {
 					dbRes = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ? AND pendingSecret", [payload.email, googleSecret]);
 				} catch (e) {
-					res.send(e);
+					res.status(500).send(e);
 					return;
 				}
 
@@ -225,7 +232,7 @@ export class ClientRequestsHandler {
 					try {
 						await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`) VALUES (?, TRUE, ?)", [payload.email, googleSecret]);
 					} catch (e) {
-						res.send(e as ErrorObject);
+						res.status(500).send(e as ErrorObject);
 						return;
 					}
 				}
@@ -233,7 +240,7 @@ export class ClientRequestsHandler {
 				if (user === undefined) {
 					let photo = await setMedia(payload.picture);
 					if (isError(photo)) {
-						res.send(photo);
+						res.status(500).send(photo);
 						return;
 					}
 					const u = {
@@ -250,12 +257,12 @@ export class ClientRequestsHandler {
 					};
 					let r = await auth.setUser(u as User);
 					if (isError(r)) {
-						res.send(r);
+						res.status(500).send(r);
 						return;
 					}
 				}
 
-				res.send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
+				res.status(401).send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
 				return;
 			}
 
@@ -265,7 +272,7 @@ export class ClientRequestsHandler {
 			try {
 				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (user as User).id]);
 			} catch (e) {
-				res.send(e as ErrorObject);
+				res.status(500).send(e as ErrorObject);
 				return;
 			}
 
@@ -280,24 +287,24 @@ export class ClientRequestsHandler {
 			try {
 				dbResponse = await sendQuery("SELECT * FROM pendingRegistration WHERE email = ? AND pendingSecret = ?", [req.body.email, req.cookies.googleSecret]);
 			} catch (e) {
-				res.send(e);
+				res.status(500).send(e);
 				return;
 			}
 
 			if ((dbResponse as Array<RowDataPacket>).length === 0) {
-				res.send(error("authentication", "Cannot confirm email"));
+				res.status(500).send(error("authentication", "Cannot confirm email"));
 				return;
 			}
 
 			let checkUser = await checkUsername(req.body.username);
 			if (checkUser != null) {
-				res.send(checkUser);
+				res.status(400).send(checkUser);
 				return;
 			}
 
 			let checkBir = checkBirth(req.body.birth);
 			if (checkBir != null) {
-				res.send(checkBir);
+				res.status(400).send(checkBir);
 				return;
 			}
 			let r;
@@ -306,7 +313,7 @@ export class ClientRequestsHandler {
 			try {
 				photo = ((await sendQuery("SELECT * FROM `user` WHERE email = ?", [req.body.email]))as Array<RowDataPacket>)[0].profilePicture;
 			} catch (e) {
-				res.send(e);
+				res.status(500).send(e);
 				return;
 			}
 
@@ -324,7 +331,7 @@ export class ClientRequestsHandler {
 			};
 			r = await auth.setUser(u as User);
 			if (isError(r)) {
-				res.send(r);
+				res.status(500).send(r);
 				return;
 			}
 
@@ -334,7 +341,7 @@ export class ClientRequestsHandler {
 			try {
 				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (r as User).id]);
 			} catch (e) {
-				res.send(e as ErrorObject);
+				res.status(500).send(e as ErrorObject);
 				return;
 			}
 
@@ -359,31 +366,31 @@ export class ClientRequestsHandler {
 			try {
 				dbResponse = await sendQuery(queryString, [req.body.username, req.body.password]);
 			} catch (e) {
-				res.send(e);
+				res.status(500).send(e);
 				return;
 			}
 
 			if ((dbResponse as Array<RowDataPacket>).length === 0) {
-				res.send(error("incorrectCredentials", "Credentials are incorrect", false));
+				res.status(401).send(error("incorrectCredentials", "Credentials are incorrect", false));
 			}
 		});
 
 		app.post("/auth/signin", async (req, res) => {
 			let checkUser = await checkUsername(req.body.username);
 			if (checkUser != null) {
-				res.send(checkUser);
+				res.status(400).send(checkUser);
 				return;
 			}
 
 			let checkBir = checkBirth(req.body.birth);
 			if (checkBir != null) {
-				res.send(checkBir);
+				res.status(400).send(checkBir);
 				return;
 			}
 
 			let checkMail = await checkEmail(req.body.email);
 			if (checkMail != null) {
-				res.send(checkMail);
+				res.status(400).send(checkMail);
 				return;
 			}
 
@@ -400,11 +407,9 @@ export class ClientRequestsHandler {
 				profilePicture: await setMedia(this.resolvePath("../media/default/default_icon_" + Math.round(Math.random() * 4 + 1) + ".png")) 
 			};
 
-			console.log(u);
-
 			let r = await auth.setUser(u as User);
 			if (isError(r)) {
-				res.send(r);
+				res.status(500).send(r);
 				return;
 			}
 
@@ -414,7 +419,7 @@ export class ClientRequestsHandler {
 			try {
 				await sendQuery("INSERT INTO session (sessionSecret, user) VALUES (?, ?)", [secret, (r as User).id]);
 			} catch (e) {
-				res.send(e as ErrorObject);
+				res.status(500).send(e as ErrorObject);
 				return;
 			}
 
@@ -431,7 +436,7 @@ export class ClientRequestsHandler {
 			try {
 				dbResponse = await sendQuery(queryString, [req.body.username]);
 			} catch (e) {
-				res.send(e);
+				res.status(500).send(e);
 				return;
 			}
 
@@ -447,7 +452,7 @@ export class ClientRequestsHandler {
 			try {
 				dbResponse = await sendQuery(queryString, [req.body.email]);
 			} catch (e) {
-				res.send(e);
+				res.status(500).send(e);
 				return;
 			}
 

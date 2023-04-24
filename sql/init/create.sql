@@ -1,24 +1,24 @@
 -- Active: 1677797151222@@127.0.0.1@3306@infoworld
-CREATE DATABASE infoWorld;
+CREATE DATABASE IF NOT EXISTS infoWorld;
 USE infoWorld;
-CREATE TABLE `role` (
+CREATE TABLE IF NOT EXISTS `role` (
 	`name` VARCHAR(255),
 	PRIMARY KEY(`name`)
 );
-CREATE TABLE `media` (
+CREATE TABLE IF NOT EXISTS `media` (
 	`id` INT AUTO_INCREMENT,
 	`path` VARCHAR(255) NOT NULL,
 	`date` DATE NOT NULL,
 	PRIMARY KEY(`id`)
 );
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
 	`id` INT AUTO_INCREMENT,
 	`username` VARCHAR(255),
 	`password` CHAR(64), -- use sha256 for password encryption
 	`email` VARCHAR(255) NOT NULL,
 	`isGoogle` BOOLEAN NOT NULL DEFAULT 0,
 	`birth` DATE NOT NULL,
-	`role` VARCHAR(255) NOT NULL DEFAULT "rookie",
+	`role` VARCHAR(255) NOT NULL DEFAULT 'rookie',
 	`level` INT NOT NULL DEFAULT 0,
 	`phone` VARCHAR(255),
 	`twoStepAuth` BOOLEAN DEFAULT FALSE,
@@ -28,19 +28,20 @@ CREATE TABLE `user` (
 	FOREIGN KEY(`profilePicture`) REFERENCES `media`(`id`)
 );
 
-CREATE TABLE `category` (
+CREATE TABLE IF NOT EXISTS `category` (
 	`name` VARCHAR(255),
 	PRIMARY KEY(`name`)
 );
 
-CREATE TABLE `articleCategory` (
-	`article` INT,
+CREATE TABLE IF NOT EXISTS `userCategory` (
+	`user` INT,
 	`category` VARCHAR(255),
-	PRIMARY KEY(`article`, `category`),
-	FOREIGN KEY(`article`) REFERENCES `article`(`id`),
-	FOREIGN KEY(`category`) REFERENCES `category`(`name`)
+	PRIMARY KEY (`user`, `category`),
+	FOREIGN KEY (`user`) REFERENCES `user`(`id`),
+	FOREIGN KEY (`category`) REFERENCES `category`(`name`)
 );
-CREATE TABLE `article` (
+
+CREATE TABLE IF NOT EXISTS `article` (
 	`id` INT AUTO_INCREMENT,
 	`title` VARCHAR(255) NOT NULL,
 	`subTitle` VARCHAR(255) NOT NULL,
@@ -50,11 +51,20 @@ CREATE TABLE `article` (
 	PRIMARY KEY(`id`),
 	FOREIGN KEY(`user`) REFERENCES `user`(`id`)
 );
-CREATE TABLE `permission` (
+
+CREATE TABLE IF NOT EXISTS `articleCategory` (
+	`article` INT,
+	`category` VARCHAR(255),
+	PRIMARY KEY(`article`, `category`),
+	FOREIGN KEY(`article`) REFERENCES `article`(`id`),
+	FOREIGN KEY(`category`) REFERENCES `category`(`name`)
+);
+
+CREATE TABLE IF NOT EXISTS `permission` (
 	`name` VARCHAR(255),
 	PRIMARY KEY(`name`)
 );
-CREATE TABLE `rolePermission` (
+CREATE TABLE IF NOT EXISTS `rolePermission` (
 	`role` VARCHAR(255),
 	`permission` VARCHAR(255),
 	PRIMARY KEY(`role`, `permission`),
@@ -62,7 +72,7 @@ CREATE TABLE `rolePermission` (
 	FOREIGN KEY(`permission`) REFERENCES `permission`(`name`)
 );
 
-CREATE TABLE `session` (
+CREATE TABLE IF NOT EXISTS `session` (
 	`id` INT AUTO_INCREMENT,
 	`sessionSecret` CHAR(64) NOT NULL,
 	`user` INT NOT NULL,
@@ -70,10 +80,23 @@ CREATE TABLE `session` (
 	FOREIGN KEY(`user`) REFERENCES `user`(`id`)
 );
 
-CREATE TABLE `pendingRegistration` (
+CREATE TABLE IF NOT EXISTS `pendingRegistration` (
 	`id` INT AUTO_INCREMENT,
 	`email` VARCHAR(255) NOT NULL,
 	`isGoogle` BOOLEAN NOT NULL,
 	`pendingSecret` CHAR(64) NOT NULL,
 	PRIMARY KEY(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `paragragh` (
+	`id` INT AUTO_INCREMENT,
+	`article` INT NOT NULL,
+	`textAlignment` ENUM ('center', 'left', 'right', 'justify') DEFAULT 'left',
+	`textPosition` ENUM ('left', 'right') DEFAULT 'left',
+	`text` VARCHAR(6800),
+	`imagePosition` ENUM ('center', 'left', 'right') DEFAULT 'right',
+	`image` INT,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`article`) REFERENCES `article`(`id`),
+	FOREIGN KEY (`image`) REFERENCES `media`(`id`)
 );
