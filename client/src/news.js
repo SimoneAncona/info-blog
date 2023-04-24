@@ -1,5 +1,5 @@
 window.addEventListener("load", async () => {
-	let latest = await post("/news/latest");
+	let latest = await get("/news/latest");
 	let latestSection = document.getElementById("latest");
 
 	latestSection.innerHTML += `

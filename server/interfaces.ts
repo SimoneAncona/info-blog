@@ -53,3 +53,18 @@ export type NewsCover = {
 	user: string,
 	userPicture: number,
 }
+
+type TextAlignment = "center" | "right" | "left" | "justify";
+type TextPosition = "left" | "right";
+type ImagePosition = "center" | "left" | "right";
+
+export type Paragraph = {
+	id: number,
+	article: number,
+	position: number,
+	textAlignment: TextAlignment,
+	textPosition: TextPosition,
+	text: string | null,
+	imagePosition: ImagePosition,
+	image: number
+}

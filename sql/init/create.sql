@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `pendingRegistration` (
 CREATE TABLE IF NOT EXISTS `paragragh` (
 	`id` INT AUTO_INCREMENT,
 	`article` INT NOT NULL,
+	`position` INT NOT NULL,
 	`textAlignment` ENUM ('center', 'left', 'right', 'justify') DEFAULT 'left',
 	`textPosition` ENUM ('left', 'right') DEFAULT 'left',
 	`text` VARCHAR(6800),

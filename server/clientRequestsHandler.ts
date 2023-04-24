@@ -12,7 +12,7 @@ import { RowDataPacket } from "mysql2";
 import * as fs from "fs";
 import { checkBirth, checkEmail, checkUsername } from "./inputCheck";
 import { setMedia } from "./mediaHandler";
-import { getLatestNews } from "./articleResponseHandler";
+import { buildHtmlArticle, getLatestNews } from "./articleResponseHandler";
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -93,8 +93,10 @@ export class ClientRequestsHandler {
 		app.get("/admin/", async (req, res) => {
 			const guard = new auth.AuthGuard(req, res);
 			if (!(await guard.isAdmin())) {
-				res.status(403).sendFile("../client/pages/")
+				res.status(403).sendFile(this.resolvePath("../client/pages/error403.html"));
+				return;
 			}
+			res.send(this.resolvePath("../client/pages/admin.html"));
 		})
 
 		app.get("/:page/", (req, res) => {
@@ -464,7 +466,7 @@ export class ClientRequestsHandler {
 
 	// ------ NEWS / ARTICLES ------
 	private newsRequests() {
-		app.post("/news/latest", async (req, res) => {
+		app.get("/news/latest", async (req, res) => {
 			let news = await getLatestNews(12);
 			if (isError(news)) {
 				res.send(news);
@@ -473,6 +475,24 @@ export class ClientRequestsHandler {
 
 			res.send(news);
 		});
+
+		app.get("/news/:id", (req, res) => {
+
+		});
+
+		app.get("/news/content/:id", async (req, res) => {
+			let id = Number(req.params.id);
+			if (Number.isNaN(id)) {
+				res.status(400).send();
+				return;
+			}
+			try {
+				let html = await buildHtmlArticle(id);
+				res.send(html);
+			} catch (e) {
+				res.status(500).send(e);
+			}
+		})
 	}
 
 	listen() {
