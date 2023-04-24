@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `pendingRegistration` (
 	PRIMARY KEY(`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `paragragh` (
+CREATE TABLE IF NOT EXISTS `paragraph` (
 	`id` INT AUTO_INCREMENT,
 	`article` INT NOT NULL,
 	`position` INT NOT NULL,
