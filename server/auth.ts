@@ -6,6 +6,7 @@ import { ErrorObject, Permission, User } from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as moment from "moment";
 import { CookieOptions, Request, Response } from "express";
+import { setMedia } from "./mediaHandler";
 
 dotenv.config();
 
@@ -160,6 +161,118 @@ export async function setupSession(res: Response, user: User) {
 			res.cookie("username", user.username, { expires: expires.toDate() });
 
 			return true;
+}
+
+export class GoogleAuth {
+
+	res: Response;
+	req: Request;
+
+	constructor(req: Request, res: Response) {
+		this.req = req;
+		this.res = res;
+	}
+
+	async googleLogin() {
+		const session = await handleAutoLoginWithSessions(this.req.cookies);
+			if (isError(session)) {
+				this.res.send(session);
+				return;
+			}
+			if (session !== undefined) {
+				this.res.send(session);
+				return;
+			}
+			if (!("credential" in this.req.body)) {
+				return;
+			}
+
+			let payload;
+			try {
+				payload = await googleVerify(this.req.body.credential);
+			} catch {
+				this.res.status(500).send(error("authentication", "An error occurred while logging in with google"));
+				return;
+			}
+
+			if (
+				payload === undefined ||
+				payload.email === undefined ||
+				payload.name === undefined ||
+				payload.picture === undefined
+			) {
+				this.res.status(500).send(error("authentication", "An error occurred while authenticating with google"));
+				return;
+			}
+
+			// check if exists in database
+			const user = await getUser(payload.email);
+			if (isError(user)) {
+				this.res.status(500).send(user as ErrorObject);
+				return;
+			}
+
+			let googleSecret: string;
+			if (!("googleSecret" in this.req.cookies)) {
+				googleSecret = casualSecret();
+				this.res.cookie("googleSecret", googleSecret, { expires: expiresSession().toDate() });
+			} else {
+				googleSecret = this.req.cookies.googleSecret;
+			}
+
+			// check if it is registered
+			if (user === undefined || (user as User).username === "") {
+				// if it's not registered need to register
+				let dbRes;
+				try {
+					dbRes = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ? AND pendingSecret", [payload.email, googleSecret]);
+				} catch (e) {
+					this.res.status(500).send(e);
+					return;
+				}
+
+				if ((dbRes as Array<RowDataPacket>).length === 0) {
+					try {
+						await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`) VALUES (?, TRUE, ?)", [payload.email, googleSecret]);
+					} catch (e) {
+						this.res.status(500).send(e as ErrorObject);
+						return;
+					}
+				}
+
+				if (user === undefined) {
+					let photo = await setMedia(payload.picture);
+					if (isError(photo)) {
+						this.res.status(500).send(photo);
+						return;
+					}
+					const u = {
+						username: "",
+						password: "",
+						email: payload.email,
+						isGoogle: true,
+						birth: "",
+						role: "rookie",
+						level: 0,
+						phone: "",
+						twoStepAuth: false,
+						profilePicture: photo
+					};
+					let r = await setUser(u as User);
+					if (isError(r)) {
+						this.res.status(500).send(r);
+						return;
+					}
+				}
+
+				this.res.status(401).send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
+				return;
+			}
+
+			if(!await setupSession(this.res, user as User)) return;
+
+			this.res.send(user as User);
+	}
 }
 
 export { googleVerify };

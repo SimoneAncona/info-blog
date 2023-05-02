@@ -52,6 +52,7 @@ export type NewsCover = {
 	date: string,
 	user: string,
 	userPicture: number,
+	categories: string[]
 }
 
 type TextAlignment = "center" | "right" | "left" | "justify";

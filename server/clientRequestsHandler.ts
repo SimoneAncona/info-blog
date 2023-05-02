@@ -5,14 +5,14 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 import * as auth from "./auth";
 import * as bodyParser from "body-parser";
-import { TokenPayload } from "google-auth-library";
+import { GoogleAuth } from "./auth";
 import { error, isError } from "./commonErrorHandler";
 import { ErrorObject, ErrorType, User } from "./interfaces";
 import { RowDataPacket } from "mysql2";
 import * as fs from "fs";
 import { checkBirth, checkEmail, checkUsername } from "./inputCheck";
 import { setMedia } from "./mediaHandler";
-import { buildHtmlArticle, getLatestNews } from "./articleResponseHandler";
+import { buildHtmlArticle, getLatestNews, getNewsInfo } from "./articleResponseHandler";
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -174,111 +174,15 @@ export class ClientRequestsHandler {
 			} catch(e) {
 				res.status(500).send(e);
 			}
-		})
+		});
 	}
 
 	// ---------------------- AUTHENTICATION ----------------------
 	private authRequests() {
 		// login with google
 		app.post("/auth/login/google", async (req, res) => {
-			const session = await auth.handleAutoLoginWithSessions(req.cookies);
-			if (isError(session)) {
-				res.send(session);
-				return;
-			}
-			if (session !== undefined) {
-				res.send(session);
-				return;
-			}
-			if (!("credential" in req.body)) {
-				return;
-			}
-
-			let payload;
-			try {
-				payload = await auth.googleVerify(req.body.credential);
-			} catch {
-				res.status(500).send(error("authentication", "An error occurred while logging in with google"));
-				return;
-			}
-
-			if (
-				payload === undefined ||
-				payload.email === undefined ||
-				payload.name === undefined ||
-				payload.picture === undefined
-			) {
-				res.status(500).send(error("authentication", "An error occurred while authenticating with google"));
-				return;
-			}
-
-			// check if exists in database
-			const user = await auth.getUser(payload.email);
-			if (isError(user)) {
-				res.status(500).send(user as ErrorObject);
-				return;
-			}
-
-			let googleSecret: string;
-			if (!("googleSecret" in req.cookies)) {
-				googleSecret = auth.casualSecret();
-				res.cookie("googleSecret", googleSecret, { expires: auth.expiresSession().toDate() });
-			} else {
-				googleSecret = req.cookies.googleSecret;
-			}
-
-			// check if it is registered
-			if (user === undefined || (user as User).username === "") {
-				// if it's not registered need to register
-				let dbRes;
-				try {
-					dbRes = await sendQuery("SELECT * FROM `pendingRegistration` WHERE email = ? AND pendingSecret", [payload.email, googleSecret]);
-				} catch (e) {
-					res.status(500).send(e);
-					return;
-				}
-
-				if ((dbRes as Array<RowDataPacket>).length === 0) {
-					try {
-						await sendQuery("INSERT INTO `pendingRegistration`(`email`, `isGoogle`, `pendingSecret`) VALUES (?, TRUE, ?)", [payload.email, googleSecret]);
-					} catch (e) {
-						res.status(500).send(e as ErrorObject);
-						return;
-					}
-				}
-
-				if (user === undefined) {
-					let photo = await setMedia(payload.picture);
-					if (isError(photo)) {
-						res.status(500).send(photo);
-						return;
-					}
-					const u = {
-						username: "",
-						password: "",
-						email: payload.email,
-						isGoogle: true,
-						birth: "",
-						role: "rookie",
-						level: 0,
-						phone: "",
-						twoStepAuth: false,
-						profilePicture: photo
-					};
-					let r = await auth.setUser(u as User);
-					if (isError(r)) {
-						res.status(500).send(r);
-						return;
-					}
-				}
-
-				res.status(401).send(error("registrationRequired", "You must sign in", false, { email: payload.email }));
-				return;
-			}
-
-			if(!await auth.setupSession(res, user as User)) return;
-
-			res.send(user as User);
+			let googleAuth = new GoogleAuth(req, res);
+			googleAuth.googleLogin();
 		});
 
 		app.post("/auth/confirm/google", async (req, res) => {
@@ -485,7 +389,21 @@ export class ClientRequestsHandler {
 			} catch (e) {
 				res.status(500).send(e);
 			}
-		})
+		});
+
+		app.get("/news/info/:id", async (req, res) => {
+			let id = Number(req.params.id);
+			if (Number.isNaN(id)) {
+				res.status(400).send();
+				return;
+			}
+			try {
+				let html = await getNewsInfo(id);
+				res.send(html);
+			} catch (e) {
+				res.status(500).send(e);
+			}
+		});
 	}
 
 	listen() {

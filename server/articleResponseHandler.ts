@@ -10,7 +10,24 @@ export async function getLatestNews(count: number) {
 	} catch (e) {
 		return e as ErrorObject;
 	}
-	return res as NewsCover[];
+	return (res as NewsCover[]).map(async (v) => {
+		let res = await getCategories(v.id);
+		if (!isError(res)) v.categories = res as string[];
+		return v;
+	});
+}
+
+export async function getNewsInfo(id: number) {
+	let res;
+	try {
+		res = (await sendQuery("SELECT `article`.`id`, `title`, `subTitle`, `date`, `username` AS `user`, `profilePicture` AS `userPicture` FROM `article`, `user` WHERE `article`.`user` = `user`.`id` AND `article`.`id` = ?", [id]) as RowDataPacket[])[0];
+	} catch (e) {
+		return e as ErrorObject;
+	}
+	let cats = await getCategories(id);
+	if (isError(cats)) return cats;
+	(res as NewsCover).categories = cats as string[];
+	return res;
 }
 
 export async function getNewsCover(id: number) {
@@ -35,7 +52,7 @@ export async function buildHtmlArticle(id: number) {
 
 	return `
 	<div class="article">
-		<h1>${(articleInfo as NewsCover).title}</h1>
+		<h1 class="title">${(articleInfo as NewsCover).title}</h1>
 		<h2>${(articleInfo as NewsCover).subTitle}</h2>
 		${buildHtmlParagraphs(paragraphs)}
 	</div>
@@ -53,8 +70,24 @@ function buildHtmlParagraphs(paragraphs: Paragraph[]) {
 function buildParagraph(p: Paragraph) {
 	return `
 	<p>
-		${p.text}
-		${p.image !== null ? "<img src='/resorces/media?id=" + p.image + ">" : ""}
+		${
+			p.textPosition === "left" ? p.text : ""
+		}
+		${p.image !== null ? "<img src='/resources/media?id=" + p.image + ">" : ""}
+		${
+			p.textPosition === "right" ? p.text : ""
+		}
 	</p>
 	`;
+}
+
+async function getCategories(id: number) {
+	let res
+	try {
+		res = await sendQuery("SELECT category FROM articleCategory WHERE article = ?", [id]);
+		if ((res as RowDataPacket[]).length === 0) return [];
+	} catch (e) {
+		return e as ErrorObject;
+	}
+	return (res as RowDataPacket[]).map((v) => v.category as string);
 }

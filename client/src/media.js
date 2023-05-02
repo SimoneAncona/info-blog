@@ -5,3 +5,7 @@ async function getMedia(mediaId) {
 		return null;
 	}
 }
+
+async function getAvatar(username) {
+	return await post("/resources/avatar", {username: username})
+}
