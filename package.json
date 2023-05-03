@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A site",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "tsc --build && node index.js",
     "build": "tsc --build",

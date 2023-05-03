@@ -1,7 +1,7 @@
 import * as mysql from "mysql2";
 import * as dotenv from "dotenv";
-import { ErrorObject } from "./interfaces";
-import * as err from "./commonErrorHandler";
+import { ErrorObject } from "./interfaces.js";
+import * as err from "./commonErrorHandler.js";
 
 dotenv.config();
 

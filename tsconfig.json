@@ -1,12 +1,13 @@
 {
 	"compilerOptions": {
-		"module": "CommonJS",
+		"module": "nodenext",
 		"noImplicitAny": true,
 		"removeComments": true,
 		"preserveConstEnums": true,
 		"sourceMap": false,
 		"strict": true,
 		"types": ["node"],
+		"moduleResolution": "nodenext"
 	},
 	"include": ["*", "server/**/*"],
 	"exclude": ["node_modules", "**/*.spec.ts"]

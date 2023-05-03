@@ -1,6 +1,6 @@
 import moment = require("moment");
-import { sendQuery } from "./dbHandler";
-import { ErrorObject } from "./interfaces";
+import { sendQuery } from "./dbHandler.js";
+import { ErrorObject } from "./interfaces.js";
 import { OkPacket } from "mysql2";
 
 export async function setMedia(path: string): Promise<number | ErrorObject> {

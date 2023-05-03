@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { ErrorObject, ErrorType } from "./interfaces";
+import { ErrorObject, ErrorType } from "./interfaces.js";
 dotenv.config();
 
 export function error(etype: ErrorType, msg: string, showTrace = true, other = {}) {

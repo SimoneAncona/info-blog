@@ -1,19 +1,21 @@
-import { sendQuery } from "./dbHandler";
-import * as express from "express";
-import * as cors from "cors";
-import * as dotenv from "dotenv";
+import { sendQuery } from "./dbHandler.js";
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 import * as path from "path";
-import * as auth from "./auth";
-import * as bodyParser from "body-parser";
-import { GoogleAuth } from "./auth";
-import { error, isError } from "./commonErrorHandler";
-import { ErrorObject, ErrorType, User } from "./interfaces";
+import * as auth from "./auth.js";
+import bodyParser from "body-parser";
+import { GoogleAuth } from "./auth.js";
+import { error, isError } from "./commonErrorHandler.js";
+import { ErrorObject, ErrorType, User } from "./interfaces.js";
 import { RowDataPacket } from "mysql2";
 import * as fs from "fs";
-import { checkBirth, checkEmail, checkUsername } from "./inputCheck";
-import { setMedia } from "./mediaHandler";
-import { buildHtmlArticle, getLatestNews, getNewsInfo } from "./articleResponseHandler";
-const cookieParser = require("cookie-parser");
+import { checkBirth, checkEmail, checkUsername } from "./inputCheck.js";
+import { setMedia } from "./mediaHandler.js";
+import { buildHtmlArticle, getLatestNews, getNewsInfo } from "./articleResponseHandler.js";
+import cookieParser from "cookie-parser";
+
+const __dirname = path.resolve();
 
 const app = express();
 app.use(bodyParser.json());
@@ -41,19 +43,19 @@ export class ClientRequestsHandler {
 	private resolvePage(str: string): string {
 		const p = path.join(__dirname, str);
 		if (fs.existsSync(p)) return p;
-		else return path.join(__dirname, "../client/pages/error404.html");
+		else return path.join(__dirname, "client/pages/error404.html");
 	}
 
 	// ---------------------- PAGES ----------------------
 	private pageRequests() {
 		app.get("/", (req, res) => {
-			res.sendFile(this.resolvePath("../client/pages/index.html"));
+			res.sendFile(this.resolvePath("client/pages/index.html"));
 		});
 
 		app.get("/signin/", async (req, res) => {
 			let email = req.query.email as string;
 			if (email === undefined) {
-				res.sendFile(this.resolvePath("../client/pages/signin.html"));
+				res.sendFile(this.resolvePath("client/pages/signin.html"));
 				return;
 			}
 			let dbResponse;
@@ -64,7 +66,7 @@ export class ClientRequestsHandler {
 				return;
 			}
 			if ((<Array<RowDataPacket>>dbResponse).length === 0) {
-				res.sendFile(this.resolvePath("../client/pages/error.html"));
+				res.sendFile(this.resolvePath("client/pages/error.html"));
 				return;
 			}
 
@@ -80,23 +82,23 @@ export class ClientRequestsHandler {
 			if ((<Array<RowDataPacket>>r).length != 0) {
 				for (let row of (<Array<RowDataPacket>>r)) {
 					if (row.email === email && row.pendingSecret === req.cookies.googleSecret) {
-						res.sendFile(this.resolvePath("../client/pages/google-signin.html"));
+						res.sendFile(this.resolvePath("client/pages/google-signin.html"));
 						return;
 					}
 				}
-				res.sendFile(this.resolvePath("../client/pages/error.html"));
+				res.sendFile(this.resolvePath("client/pages/error.html"));
 				return;
 			}
-			res.sendFile(this.resolvePath("../client/pages/google-signin.html"));
+			res.sendFile(this.resolvePath("client/pages/google-signin.html"));
 		});
 
 		app.get("/admin/", async (req, res) => {
 			const guard = new auth.AuthGuard(req, res);
 			if (!(await guard.isAdmin())) {
-				res.status(403).sendFile(this.resolvePath("../client/pages/error403.html"));
+				res.status(403).sendFile(this.resolvePath("client/pages/error403.html"));
 				return;
 			}
-			res.sendFile(this.resolvePath("../client/pages/admin.html"));
+			res.sendFile(this.resolvePath("client/pages/admin.html"));
 		});
 
 		app.get("/profile/", async (req, res) => {
@@ -104,11 +106,11 @@ export class ClientRequestsHandler {
 			if (user === undefined || isError(user)) {
 				res.redirect("/login");
 			}
-			res.sendFile(this.resolvePath("../client/pages/profile.html"));
+			res.sendFile(this.resolvePath("client/pages/profile.html"));
 		});
 
 		app.get("/:page/", (req, res) => {
-			res.sendFile(this.resolvePage((`../client/pages/${req.params.page}.html`)));
+			res.sendFile(this.resolvePage((`client/pages/${req.params.page}.html`)));
 		});
 	}
 
@@ -116,30 +118,30 @@ export class ClientRequestsHandler {
 	private resourcesRequests() {
 		// get common css
 		app.get("/resources/css/", (req, res) => {
-			res.sendFile(this.resolvePath(("../client/style/common.css")));
+			res.sendFile(this.resolvePath(("client/style/common.css")));
 		});
 
 		// get home page css
 		app.get("/resources/css/:file", (req, res) => {
-			res.sendFile(this.resolvePath((`../client/style/${req.params.file}.css`)));
+			res.sendFile(this.resolvePath((`client/style/${req.params.file}.css`)));
 		});
 
 		// get font
 		app.get("/resources/font/", (req, res) => {
-			res.sendFile(this.resolvePath(("../client/assets/Gotham-Font/GothamMedium.ttf")));
+			res.sendFile(this.resolvePath(("client/assets/Gotham-Font/GothamMedium.ttf")));
 		});
 
 		app.get("/resources/js/:file", (req, res) => {
-			res.sendFile(this.resolvePath((`../client/src/${req.params.file}.js`)));
+			res.sendFile(this.resolvePath((`client/src/${req.params.file}.js`)));
 		});
 
 		app.get("/resources/js", (req, res) => {
-			res.sendFile(this.resolvePath(("../client/src/common.js")));
+			res.sendFile(this.resolvePath(("client/src/common.js")));
 		});
 
 		// send image
 		app.get("/resources/images/:image", (req, res) => {
-			res.sendFile(this.resolvePath((`../client/assets/images/${req.params.image}`)));
+			res.sendFile(this.resolvePath((`client/assets/images/${req.params.image}`)));
 		});
 
 		// get profile picture
@@ -315,7 +317,7 @@ export class ClientRequestsHandler {
 				level: 0,
 				phone: req.body.phone,
 				twoStepAuth: false,
-				profilePicture: await setMedia(this.resolvePath("../media/default/default_icon_" + Math.round(Math.random() * 4 + 1) + ".png")) 
+				profilePicture: await setMedia(this.resolvePath("media/default/default_icon_" + Math.round(Math.random() * 4 + 1) + ".png")) 
 			};
 
 			let r = await auth.setUser(u as User);
@@ -374,7 +376,7 @@ export class ClientRequestsHandler {
 		});
 
 		app.get("/news/:id", (req, res) => {
-			res.sendFile(this.resolvePath("../client/pages/article.html"));
+			res.sendFile(this.resolvePath("client/pages/article.html"));
 		});
 
 		app.get("/news/content/:id", async (req, res) => {

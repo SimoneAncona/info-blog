@@ -1,6 +1,6 @@
-import { sendQuery } from "./dbHandler";
-import { ErrorObject } from "./interfaces";
-import { error } from "./commonErrorHandler";
+import { sendQuery } from "./dbHandler.js";
+import { ErrorObject } from "./interfaces.js";
+import { error } from "./commonErrorHandler.js";
 import { RowDataPacket } from "mysql2";
 
 export async function checkUsername(username: string): Promise<null | ErrorObject> {

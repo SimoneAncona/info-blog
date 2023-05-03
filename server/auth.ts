@@ -1,12 +1,12 @@
 import { OAuth2Client, TokenPayload } from "google-auth-library";
-import { sendQuery } from "./dbHandler";
-import * as dotenv from "dotenv";
-import { error, isError } from "./commonErrorHandler";
-import { ErrorObject, Permission, User } from "./interfaces";
+import { sendQuery } from "./dbHandler.js";
+import dotenv from "dotenv";
+import { error, isError } from "./commonErrorHandler.js";
+import { ErrorObject, Permission, User } from "./interfaces.js";
 import { RowDataPacket } from "mysql2";
-import * as moment from "moment";
+import moment from "moment";
 import { CookieOptions, Request, Response } from "express";
-import { setMedia } from "./mediaHandler";
+import { setMedia } from "./mediaHandler.js";
 
 dotenv.config();
 

@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
-import { sendQuery } from "./dbHandler";
-import { ErrorObject, NewsCover, Paragraph } from "./interfaces";
-import { isError } from "./commonErrorHandler";
+import { sendQuery } from "./dbHandler.js";
+import { ErrorObject, NewsCover, Paragraph } from "./interfaces.js";
+import { isError } from "./commonErrorHandler.js";
 
 export async function getLatestNews(count: number) {
 	let res;
@@ -10,11 +10,12 @@ export async function getLatestNews(count: number) {
 	} catch (e) {
 		return e as ErrorObject;
 	}
-	return (res as NewsCover[]).map(async (v) => {
-		let res = await getCategories(v.id);
-		if (!isError(res)) v.categories = res as string[];
-		return v;
-	});
+	for (let v of res as NewsCover[]) {
+        let cat = await getCategories(v.id);
+		if (isError(cat)) continue;
+        v.categories = cat as string[];
+    }
+    return res;
 }
 
 export async function getNewsInfo(id: number) {
