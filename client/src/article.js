@@ -16,6 +16,10 @@ window.addEventListener("load", async () => {
         ${getCategories(asideContent.categories)}
     <div>
     `;
+
+    if (getCookie("username") === asideContent.user) {
+        asideContent.innerHTML += `<div class="clickable button" onclick='modify(${asideContent.id})'>Modifica</div>`
+    }
 });
 
 function getCategories(strings) {
@@ -23,4 +27,8 @@ function getCategories(strings) {
     for (let s of strings) {
         str += "<div class='category'>s</div> ";
     }
+}
+
+function modify(id) {
+    
 }
